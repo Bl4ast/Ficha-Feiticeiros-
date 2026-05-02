@@ -392,11 +392,13 @@
                         </div>
                     </div>
 
-                    <div class="bg-cardBg p-3 rounded-lg border border-slate-700 flex flex-col justify-center items-center transition-colors">
+                    <div class="bg-cardBg p-3 rounded-lg border border-slate-700 flex flex-col justify-center items-center transition-colors relative">
                         <span class="text-xs font-semibold mb-1 text-slate-400 uppercase text-center transition-colors"><i class="fas fa-shoe-prints mr-1"></i> Movimento</span>
-                        <div class="flex items-center gap-1 mt-1">
-                            <input type="number" id="deslocamento" class="input-field text-center font-bold text-2xl w-16 p-1" value="9" onchange="calcularDerivados()">
+                        <div class="flex items-center gap-1 mt-1 relative">
+                            <input type="number" id="deslocamento" class="input-field text-center font-bold text-xl w-14 p-1" value="9" onchange="calcularDerivados()" title="Base">
                             <span class="text-slate-500 font-bold transition-colors">m</span>
+                            <!-- Badge Bônus de Corrosão -->
+                            <div id="deslocamento-total" class="absolute -top-3 -right-6 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden shadow-[0_0_5px_red]"></div>
                         </div>
                         <span id="alerta-deslocamento" class="text-[10px] text-red-400 font-bold hidden mt-1 transition-colors">Penalizado!</span>
                     </div>
@@ -466,6 +468,45 @@
                 </div>
             </div>
 
+            <!-- NOVO: PAINEL PROTOCOLO DE CORROSÃO (Só aparece no Tema Vinteum + Modo Batalha) -->
+            <div id="painel-corrosao" class="hidden grid-cols-1 md:grid-cols-3 gap-4 bg-black/80 border-2 border-red-800 p-5 rounded-lg shadow-[0_0_15px_rgba(255,0,60,0.5)] transition-all">
+                <div class="md:col-span-3 text-center mb-2">
+                    <h2 class="text-2xl font-bold text-red-500 uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;"><i class="fas fa-virus mr-2"></i>Protocolo de Corrosão</h2>
+                </div>
+                
+                <!-- Buffs -->
+                <div class="bg-red-950/40 p-3 rounded border border-red-900/50">
+                    <h3 class="text-sm text-red-400 font-bold mb-2 border-b border-red-900 pb-1"><i class="fas fa-arrow-up mr-1"></i> Poder do Vírus</h3>
+                    <ul class="text-xs text-slate-300 space-y-2 mt-2">
+                        <li class="flex justify-between"><span>Ataque (BT/2)</span> <span id="corr-atk" class="text-red-400 font-bold text-sm">+0</span></li>
+                        <li class="flex justify-between"><span>Dano (BT)</span> <span id="corr-dmg" class="text-red-400 font-bold text-sm">+0</span></li>
+                        <li class="flex justify-between"><span>Deslocamento</span> <span class="text-red-400 font-bold text-sm">+6m</span></li>
+                    </ul>
+                </div>
+                
+                <!-- Gerenciamento -->
+                <div class="bg-red-950/40 p-3 rounded border border-red-900/50 flex flex-col items-center justify-center relative">
+                    <h3 class="text-sm text-red-400 font-bold mb-3"><i class="fas fa-biohazard mr-1"></i> Corrosão Mental</h3>
+                    <div class="flex items-center gap-4 mb-3">
+                        <button onclick="alterarCorrosao(-1)" class="bg-red-900 hover:bg-red-700 text-white w-8 h-8 rounded-full font-bold shadow-lg transition">-</button>
+                        <span class="text-4xl font-bold text-white transition-colors" id="corr-atual">0</span> 
+                        <span class="text-lg text-red-500 font-bold">/ <span id="corr-max">0</span></span>
+                        <button onclick="alterarCorrosao(1)" class="bg-red-900 hover:bg-red-700 text-white w-8 h-8 rounded-full font-bold shadow-lg transition">+</button>
+                    </div>
+                    <button onclick="purgaRapida()" class="bg-red-800 hover:bg-red-600 text-white text-[10px] uppercase font-bold px-3 py-1.5 rounded shadow-[0_0_8px_rgba(255,0,0,0.5)] border border-red-500 transition w-full">Purga Rápida (-5 PE / -2 Nv)</button>
+                </div>
+                
+                <!-- Estabilidade -->
+                <div class="bg-red-950/40 p-3 rounded border border-red-900/50 flex flex-col justify-center">
+                    <h3 class="text-sm text-red-400 font-bold mb-2 border-b border-red-900 pb-1"><i class="fas fa-brain mr-1"></i> Integridade</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 leading-tight">Se a Corrosão atingir o limite, faça o <b>Teste de Integridade</b> no início do turno para não perder o controle.</p>
+                    <div class="mt-auto text-center bg-black/50 p-2 rounded border border-red-900">
+                        <span class="text-xs text-slate-300 uppercase font-bold">DC do Teste:</span>
+                        <span id="corr-dc" class="text-2xl font-bold text-red-500 ml-2 drop-shadow-[0_0_5px_red]">15</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Linha 4: Perícias, Condições e Defesas -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 
@@ -480,7 +521,7 @@
                     </div>
                 </div>
 
-                <!-- Condições e Defesas (5 colunas) -->
+                <!-- Condições, Defesas e Redução de Dano (5 colunas) -->
                 <div class="lg:col-span-5 space-y-4">
                     <!-- Condições -->
                     <div class="bg-cardBg p-4 rounded-lg border border-orange-900/50 transition-colors">
@@ -502,6 +543,23 @@
                         </div>
                         <div id="lista-defesas" class="space-y-3 max-h-[160px] overflow-y-auto pr-2">
                             <!-- Defesas JS -->
+                        </div>
+                    </div>
+
+                    <!-- Redução de Dano (NOVO) -->
+                    <div class="bg-cardBg p-4 rounded-lg border border-indigo-900/50 transition-colors">
+                        <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2 transition-colors">
+                            <h2 class="text-lg font-bold text-indigo-400 transition-colors"><i class="fas fa-shield-virus mr-2"></i>Redução de Dano (RD)</h2>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs text-slate-400 uppercase font-bold transition-colors">RD Geral (Todos os Danos)</label>
+                                <input type="number" id="rd-geral" class="input-field w-20 text-center font-bold text-lg p-1 bg-slate-900 transition-colors" value="0" onchange="autoSalvar()">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">RDs Específicas / Condicionais</label>
+                                <textarea id="rd-especifica" class="input-field bg-slate-900 text-xs p-2 mt-1 h-16 resize-y w-full transition-colors" placeholder="Ex: Fogo 5, Impacto 10, Balístico 2..." onchange="autoSalvar()"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -737,11 +795,12 @@
 
         // --- ESTADO GLOBAL ---
         let inventario = [{ id: 1, nome: "Ferramenta Amaldiçoada", desc: "", qtd: 1, peso: 1 }];
-        let ataques = [{ id: 1, nome: "Ataque Desarmado", teste: "Luta", dano: "1d3+FOR", critico: "x2", alcance: "C-a-C", especial: "" }];
-        let tecnicas = [{ id: 1, nome: "Técnica Básica", custo: "1 PE", teste: "Vontade", dano: "1d6", efeito: "" }];
+        let ataques = [{ id: 1, nome: "Ataque Desarmado", acao: "Padrão", teste: "Luta", dano: "1d3+FOR", critico: "x2", alcance: "C-a-C", especial: "" }];
+        let tecnicas = [{ id: 1, nome: "Técnica Básica", acao: "Padrão", custo: "1 PE", teste: "Vontade", dano: "1d6", efeito: "" }];
         let treinamentos = []; let habilidades = { origem: [], espec: [], talento: [] };
         let condicoes = []; let defesas = []; let votos = []; let shikigamis = [];
         let configTema = { preset: "padrao", cor: "#7c3aed", fonte: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", modoBatalha: false };
+        let corrosaoAtual = 0; // Estado da Corrosão
         let petalInterval = null;
 
         // --- INICIALIZAR PERÍCIAS ---
@@ -779,6 +838,7 @@
             };
 
             let penGlobal = 0, penAtributos = { for: 0, des: 0, con: 0, int: 0, sab: 0, pre: 0 }, penDefesa = 0, multDeslocamento = 1;
+            let bonusDeslocamentoCorrosao = 0;
 
             condicoes.forEach(c => {
                 const n = c.nome;
@@ -797,7 +857,7 @@
 
             for(let key in baseAttrs) { document.getElementById(`mod-${key}`).innerText = baseAttrs[key] >= 0 ? '+' + baseAttrs[key] : baseAttrs[key]; }
 
-            const bonusNivel = Math.floor(nivel / 2);
+            const bonusNivel = Math.floor(nivel / 2); // Equivalente ao Bônus de Treinamento (BT)
             document.getElementById('txt-bonus-nivel').innerText = '+' + bonusNivel;
             let percepcaoTotal = 0;
 
@@ -820,11 +880,53 @@
             document.getElementById('percepcao-passiva').innerText = 10 + percepcaoTotal;
             document.getElementById('valor-cd').innerText = 10 + bonusNivel + baseAttrs[document.getElementById('attr-cd').value];
 
-            const inputDesloc = document.getElementById('deslocamento'); const alertaDesloc = document.getElementById('alerta-deslocamento');
+            // --- LÓGICA DO PROTOCOLO DE CORROSÃO ---
+            let maxCorrosao = Math.max(0, Math.floor(baseAttrs.int / 2));
+            if (document.getElementById('corr-max')) document.getElementById('corr-max').innerText = maxCorrosao;
+            
+            if (configTema.preset === 'vinteum' && configTema.modoBatalha) {
+                bonusDeslocamentoCorrosao = 6;
+                // Preenche os valores na tabela
+                document.getElementById('corr-atk').innerText = '+' + Math.floor(bonusNivel / 2);
+                document.getElementById('corr-dmg').innerText = '+' + bonusNivel;
+                
+                let dcTeste = 15 + bonusNivel + corrosaoAtual + Math.floor(nivel / 2);
+                document.getElementById('corr-dc').innerText = dcTeste;
+
+                // Animação de limite
+                const elAtual = document.getElementById('corr-atual');
+                elAtual.innerText = corrosaoAtual;
+                if(corrosaoAtual >= maxCorrosao && maxCorrosao > 0) {
+                    elAtual.classList.add('text-red-500', 'animate-pulse');
+                    elAtual.classList.remove('text-white');
+                } else {
+                    elAtual.classList.remove('text-red-500', 'animate-pulse');
+                    elAtual.classList.add('text-white');
+                }
+            }
+
+            // Calculo Deslocamento Total
+            const inputDesloc = document.getElementById('deslocamento'); 
+            const alertaDesloc = document.getElementById('alerta-deslocamento');
+            const totalBadge = document.getElementById('deslocamento-total');
+            
+            let deslocBase = parseInt(inputDesloc.value) || 9;
+            
+            if (bonusDeslocamentoCorrosao > 0) {
+                totalBadge.classList.remove('hidden');
+                totalBadge.innerText = (deslocBase + bonusDeslocamentoCorrosao) + "m";
+            } else {
+                totalBadge.classList.add('hidden');
+            }
+
             if(multDeslocamento < 1) {
                 inputDesloc.classList.add('text-red-500'); alertaDesloc.classList.remove('hidden');
                 alertaDesloc.innerText = multDeslocamento === 0 ? "Imóvel (0m)" : "Metade (Penalizado)";
-            } else { inputDesloc.classList.remove('text-red-500'); alertaDesloc.classList.add('hidden'); }
+                totalBadge.classList.add('bg-slate-700'); totalBadge.classList.remove('bg-red-600', 'shadow-[0_0_5px_red]');
+            } else { 
+                inputDesloc.classList.remove('text-red-500'); alertaDesloc.classList.add('hidden');
+                totalBadge.classList.remove('bg-slate-700'); totalBadge.classList.add('bg-red-600', 'shadow-[0_0_5px_red]');
+            }
 
             const pvMax = (parseInt(document.getElementById('pv-base').value) || 0) + baseAttrs.con + (((parseInt(document.getElementById('pv-nivel').value) || 0) + baseAttrs.con) * (nivel > 1 ? nivel - 1 : 0)) + (parseInt(document.getElementById('pv-adicional').value) || 0);
             const peMax = (parseInt(document.getElementById('pe-base').value) || 0) + baseAttrs.pre + (((parseInt(document.getElementById('pe-nivel').value) || 0) + baseAttrs.pre) * (nivel > 1 ? nivel - 1 : 0)) + (parseInt(document.getElementById('pe-adicional').value) || 0);
@@ -844,6 +946,25 @@
             if(tipo === 'pv') document.getElementById('pv-atual').value = document.getElementById('pv-max').value;
             else if(tipo === 'pe') document.getElementById('pe-atual').value = document.getElementById('pe-max').value;
             calcularDerivados();
+        }
+
+        // --- SISTEMA PROTOCOLO DE CORROSÃO (Funções de botão) ---
+        function alterarCorrosao(valor) {
+            corrosaoAtual += valor;
+            if (corrosaoAtual < 0) corrosaoAtual = 0;
+            calcularDerivados();
+            autoSalvar();
+        }
+
+        function purgaRapida() {
+            let peAtual = parseInt(document.getElementById('pe-atual').value) || 0;
+            if (peAtual >= 5) {
+                document.getElementById('pe-atual').value = peAtual - 5;
+                alterarCorrosao(-2);
+                mostrarModal("Purga de Sistema", "Você gastou 5 PE e purgou parte do vírus! (Nível de Corrosão -2)");
+            } else {
+                mostrarModal("Energia Insuficiente", "Você precisa de pelo menos 5 PE para forçar uma Purga Rápida.");
+            }
         }
 
         // --- SISTEMAS VISUAIS DE LISTAS ---
@@ -970,16 +1091,28 @@
                         <button onclick="removerAtaque(${index})" class="absolute top-2 right-2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100"><i class="fas fa-times"></i></button>
                         <input type="text" class="input-field font-bold text-red-300 bg-transparent border-none px-1 py-0 mb-2 text-lg w-11/12 transition-colors" value="${atk.nome}" placeholder="Arma / Ataque" onchange="atualizarAtaque(${index}, 'nome', this.value)">
                         <div class="grid grid-cols-12 gap-3">
-                            <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Teste</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${atk.teste}" onchange="atualizarAtaque(${index}, 'teste', this.value)"></div>
-                            <div class="col-span-4"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Dano</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${atk.dano}" onchange="atualizarAtaque(${index}, 'dano', this.value)"></div>
-                            <div class="col-span-2"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Crítico</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 text-center transition-colors" value="${atk.critico}" onchange="atualizarAtaque(${index}, 'critico', this.value)"></div>
-                            <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Alcance</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${atk.alcance}" onchange="atualizarAtaque(${index}, 'alcance', this.value)"></div>
+                            <div class="col-span-3">
+                                <label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Ação</label>
+                                <select class="input-field bg-slate-900 text-[11px] p-1.5 mt-1 transition-colors" onchange="atualizarAtaque(${index}, 'acao', this.value)">
+                                    <option value="Padrão" ${atk.acao === 'Padrão' ? 'selected' : ''}>Padrão</option>
+                                    <option value="Movimento" ${atk.acao === 'Movimento' ? 'selected' : ''}>Movimento</option>
+                                    <option value="Bônus" ${atk.acao === 'Bônus' ? 'selected' : ''}>Bônus</option>
+                                    <option value="Reação" ${atk.acao === 'Reação' ? 'selected' : ''}>Reação</option>
+                                    <option value="Livre" ${atk.acao === 'Livre' ? 'selected' : ''}>Livre</option>
+                                    <option value="Simples" ${atk.acao === 'Simples' ? 'selected' : ''}>Simples</option>
+                                    <option value="Complexa" ${atk.acao === 'Complexa' ? 'selected' : ''}>Complexa</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Teste</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 transition-colors" value="${atk.teste}" onchange="atualizarAtaque(${index}, 'teste', this.value)"></div>
+                            <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Dano</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 transition-colors" value="${atk.dano}" onchange="atualizarAtaque(${index}, 'dano', this.value)"></div>
+                            <div class="col-span-2"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Crítico</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 text-center transition-colors" value="${atk.critico}" onchange="atualizarAtaque(${index}, 'critico', this.value)"></div>
+                            <div class="col-span-2"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Alcance</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 transition-colors" value="${atk.alcance}" onchange="atualizarAtaque(${index}, 'alcance', this.value)"></div>
                             <div class="col-span-12"><textarea class="input-field bg-slate-900 text-xs p-2 mt-1 h-16 resize-y w-full transition-colors" placeholder="Especial / Observações..." onchange="atualizarAtaque(${index}, 'especial', this.value)">${atk.especial || ''}</textarea></div>
                         </div>
                     </div>`;
             });
         }
-        function adicionarAtaque() { ataques.push({ id: Date.now(), nome: "Novo Ataque", teste: "", dano: "", critico: "", alcance: "", especial: "" }); renderizarAtaques(); }
+        function adicionarAtaque() { ataques.push({ id: Date.now(), nome: "Novo Ataque", acao: "Padrão", teste: "", dano: "", critico: "", alcance: "", especial: "" }); renderizarAtaques(); }
         function removerAtaque(i) { ataques.splice(i, 1); renderizarAtaques(); }
         function atualizarAtaque(i, c, v) { ataques[i][c] = v; }
 
@@ -991,15 +1124,27 @@
                         <button onclick="removerTecnica(${index})" class="absolute top-2 right-2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100"><i class="fas fa-times"></i></button>
                         <input type="text" class="input-field font-bold text-purple-300 bg-transparent border-none px-1 py-0 mb-2 text-lg w-11/12 transition-colors" value="${tec.nome}" placeholder="Nome da Técnica" onchange="atualizarTecnica(${index}, 'nome', this.value)">
                         <div class="grid grid-cols-12 gap-3">
-                            <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Custo</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 text-center transition-colors" value="${tec.custo}" onchange="atualizarTecnica(${index}, 'custo', this.value)"></div>
-                            <div class="col-span-4"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Teste</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${tec.teste || ''}" onchange="atualizarTecnica(${index}, 'teste', this.value)"></div>
-                            <div class="col-span-5"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Dano/Cura</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${tec.dano}" onchange="atualizarTecnica(${index}, 'dano', this.value)"></div>
+                            <div class="col-span-3">
+                                <label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Ação</label>
+                                <select class="input-field bg-slate-900 text-[11px] p-1.5 mt-1 transition-colors" onchange="atualizarTecnica(${index}, 'acao', this.value)">
+                                    <option value="Padrão" ${tec.acao === 'Padrão' ? 'selected' : ''}>Padrão</option>
+                                    <option value="Movimento" ${tec.acao === 'Movimento' ? 'selected' : ''}>Movimento</option>
+                                    <option value="Bônus" ${tec.acao === 'Bônus' ? 'selected' : ''}>Bônus</option>
+                                    <option value="Reação" ${tec.acao === 'Reação' ? 'selected' : ''}>Reação</option>
+                                    <option value="Livre" ${tec.acao === 'Livre' ? 'selected' : ''}>Livre</option>
+                                    <option value="Simples" ${tec.acao === 'Simples' ? 'selected' : ''}>Simples</option>
+                                    <option value="Complexa" ${tec.acao === 'Complexa' ? 'selected' : ''}>Complexa</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Custo</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 text-center transition-colors" value="${tec.custo}" onchange="atualizarTecnica(${index}, 'custo', this.value)"></div>
+                            <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Teste</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 transition-colors" value="${tec.teste || ''}" onchange="atualizarTecnica(${index}, 'teste', this.value)"></div>
+                            <div class="col-span-4"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Dano/Cura</label><input type="text" class="input-field bg-slate-900 text-xs p-1.5 mt-1 transition-colors" value="${tec.dano}" onchange="atualizarTecnica(${index}, 'dano', this.value)"></div>
                             <div class="col-span-12"><textarea class="input-field bg-slate-900 text-sm p-2 mt-1 h-24 resize-y w-full transition-colors" placeholder="Descrição detalhada e Efeitos da Técnica..." onchange="atualizarTecnica(${index}, 'efeito', this.value)">${tec.efeito || ''}</textarea></div>
                         </div>
                     </div>`;
             });
         }
-        function adicionarTecnica() { tecnicas.push({ id: Date.now(), nome: "Nova Técnica", custo: "", teste: "", dano: "", efeito: "" }); renderizarTecnicas(); }
+        function adicionarTecnica() { tecnicas.push({ id: Date.now(), nome: "Nova Técnica", acao: "Padrão", custo: "", teste: "", dano: "", efeito: "" }); renderizarTecnicas(); }
         function removerTecnica(i) { tecnicas.splice(i, 1); renderizarTecnicas(); }
         function atualizarTecnica(i, c, v) { tecnicas[i][c] = v; }
 
@@ -1073,6 +1218,7 @@
 
             document.body.classList.remove('tema-pergaminho', 'tema-sangue', 'tema-neon', 'tema-vinteum', 'modo-batalha');
             const btnBatalha = document.getElementById('btn-modo-batalha');
+            const painelCorrosao = document.getElementById('painel-corrosao');
 
             if (tema.preset && tema.preset !== 'padrao') { document.body.classList.add(`tema-${tema.preset}`); }
 
@@ -1084,17 +1230,24 @@
                     document.body.classList.add('modo-batalha');
                     btnBatalha.classList.add('modo-batalha-on');
                     btnBatalha.innerHTML = '<i class="fas fa-bolt text-white"></i> MODO BATALHA: ON';
+                    painelCorrosao.classList.remove('hidden');
+                    painelCorrosao.classList.add('grid');
                     iniciarPetalas();
                 } else {
                     btnBatalha.classList.remove('modo-batalha-on');
                     btnBatalha.innerHTML = '<i class="fas fa-bolt text-cyan-400"></i> MODO BATALHA';
+                    painelCorrosao.classList.add('hidden');
+                    painelCorrosao.classList.remove('grid');
                     pararPetalas();
                 }
             } else {
                 btnBatalha.classList.add('hidden');
+                painelCorrosao.classList.add('hidden');
+                painelCorrosao.classList.remove('grid');
                 pararPetalas();
                 document.getElementById('main-title').style.backgroundImage = `linear-gradient(to right, #c084fc, var(--color-cursed))`;
             }
+            calcularDerivados();
         }
 
         function ajustarCorHex(hex, luminosidade) {
@@ -1109,9 +1262,16 @@
             return result;
         }
 
-        // --- SISTEMA DO MODO BATALHA (VINTEUM) ---
+        // --- SISTEMA DO MODO BATALHA E CORROSÃO ---
         function toggleModoBatalha() {
             configTema.modoBatalha = !configTema.modoBatalha;
+            
+            // Se está DESLIGANDO o modo batalha e tiver corrosão, aplica exaustão
+            if (!configTema.modoBatalha && corrosaoAtual > 0) {
+                mostrarModal("Protocolo de Corrosão: Encerrado", `O Modo de Corrosão foi desativado. O vírus parou de agir, mas o desgaste no seu sistema deixou você sob a condição de EXAUSTO por ${corrosaoAtual} rodada(s)!`);
+                corrosaoAtual = 0;
+            }
+
             aplicarTema(configTema);
             autoSalvar();
         }
@@ -1146,11 +1306,17 @@
                 jogador: document.getElementById('nome-jogador').value, nome: document.getElementById('nome').value,
                 grau: document.getElementById('grau').value, origem: document.getElementById('origem').value,
                 classeSelect: document.getElementById('classe-select').value, nivel: document.getElementById('nivel').value,
-                secundarios: { deslocamento: document.getElementById('deslocamento').value, attrCD: document.getElementById('attr-cd').value, caBonus: document.getElementById('ca-bonus').value },
+                secundarios: { 
+                    deslocamento: document.getElementById('deslocamento').value, 
+                    attrCD: document.getElementById('attr-cd').value, 
+                    caBonus: document.getElementById('ca-bonus').value,
+                    rdGeral: document.getElementById('rd-geral').value,
+                    rdEspecifica: document.getElementById('rd-especifica').value
+                },
                 classeInfo: { pvBase: document.getElementById('pv-base').value, pvNivel: document.getElementById('pv-nivel').value, peBase: document.getElementById('pe-base').value, peNivel: document.getElementById('pe-nivel').value },
                 atributos: { for: document.getElementById('attr-for').value, des: document.getElementById('attr-des').value, con: document.getElementById('attr-con').value, int: document.getElementById('attr-int').value, sab: document.getElementById('attr-sab').value, pre: document.getElementById('attr-pre').value },
                 pericias: treinoPericias,
-                status: { pvAdicional: document.getElementById('pv-adicional').value, peAdicional: document.getElementById('pe-adicional').value, pvAtual: document.getElementById('pv-atual').value, peAtual: document.getElementById('pe-atual').value },
+                status: { pvAdicional: document.getElementById('pv-adicional').value, peAdicional: document.getElementById('pe-adicional').value, pvAtual: document.getElementById('pv-atual').value, peAtual: document.getElementById('pe-atual').value, corrosaoAtual: corrosaoAtual },
                 condicoes: condicoes, defesas: defesas, votos: votos, shikigamis: shikigamis, treinamentos: treinamentos,
                 habilidadesDin: habilidades, inventario: inventario, ataques: ataques, tecnicas: tecnicas,
                 anotacoes: document.getElementById('anotacoes').value,
@@ -1167,7 +1333,13 @@
 
             if(dados.secundarios) {
                 document.getElementById('deslocamento').value = dados.secundarios.deslocamento || 9;
-                document.getElementById('attr-cd').value = dados.secundarios.attrCD || 'pre'; document.getElementById('ca-bonus').value = dados.secundarios.caBonus || 0;
+                document.getElementById('attr-cd').value = dados.secundarios.attrCD || 'pre'; 
+                document.getElementById('ca-bonus').value = dados.secundarios.caBonus || 0;
+                if(document.getElementById('rd-geral')) document.getElementById('rd-geral').value = dados.secundarios.rdGeral || 0;
+                if(document.getElementById('rd-especifica')) document.getElementById('rd-especifica').value = dados.secundarios.rdEspecifica || '';
+            } else {
+                if(document.getElementById('rd-geral')) document.getElementById('rd-geral').value = 0;
+                if(document.getElementById('rd-especifica')) document.getElementById('rd-especifica').value = '';
             }
 
             if(dados.classeInfo) {
@@ -1185,9 +1357,13 @@
             if(dados.status) {
                 document.getElementById('pv-adicional').value = dados.status.pvAdicional || 0; document.getElementById('pe-adicional').value = dados.status.peAdicional || 0;
                 document.getElementById('pv-atual').value = dados.status.pvAtual || 0; document.getElementById('pe-atual').value = dados.status.peAtual || 0;
+                corrosaoAtual = dados.status.corrosaoAtual || 0;
             }
 
-            inventario = dados.inventario || []; ataques = dados.ataques || []; tecnicas = dados.tecnicas || [];
+            inventario = dados.inventario || []; 
+            ataques = (dados.ataques || []).map(atk => ({...atk, acao: atk.acao || "Padrão"})); 
+            tecnicas = (dados.tecnicas || []).map(tec => ({...tec, acao: tec.acao || "Padrão"}));
+            
             document.getElementById('anotacoes').value = dados.anotacoes || '';
 
             if(dados.tema) { configTema = dados.tema; aplicarTema(configTema); }
