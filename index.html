@@ -514,7 +514,7 @@
                 <div class="lg:col-span-7 bg-cardBg p-4 rounded-lg border border-slate-700 transition-colors">
                     <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3 transition-colors">
                         <h2 class="text-xl font-bold text-cyan-400 transition-colors"><i class="fas fa-list-check mr-2"></i>Perícias & Maestria</h2>
-                        <span class="text-sm text-slate-400 transition-colors">Total = Atributo + Treino (Maestria) + Bônus (<span id="txt-bonus-nivel" class="font-bold text-white transition-colors">0</span>)</span>
+                        <span class="text-sm text-slate-400 transition-colors">Total = Atributo + Nvl. Treino + Bônus de Maestria/BT (<span id="txt-bonus-nivel" class="font-bold text-white transition-colors">0</span>)</span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="lista-pericias">
                         <!-- Perícias via JS -->
@@ -859,13 +859,14 @@
 
             for(let key in baseAttrs) { document.getElementById(`mod-${key}`).innerText = baseAttrs[key] >= 0 ? '+' + baseAttrs[key] : baseAttrs[key]; }
 
-            const bonusNivel = Math.floor(nivel / 2); // Equivalente ao Bônus de Treinamento (BT)
-            document.getElementById('txt-bonus-nivel').innerText = '+' + bonusNivel;
+            // CORREÇÃO: Bônus de Maestria (BT) baseado na tabela oficial (+2 nos nv 1-4, +3 nos nv 5-8, etc.)
+            const bonusMaestria = Math.ceil(nivel / 4) + 1; 
+            document.getElementById('txt-bonus-nivel').innerText = '+' + bonusMaestria;
             let percepcaoTotal = 0;
 
             periciasBase.forEach(p => {
                 const treino = parseInt(document.getElementById(`per-${p.id}`)?.value) || 0;
-                const totalFinal = (baseAttrs[p.attr] - penAtributos[p.attr]) + treino + bonusNivel - penGlobal;
+                const totalFinal = (baseAttrs[p.attr] - penAtributos[p.attr]) + treino + bonusMaestria - penGlobal;
                 if (p.id === 'percepcao') percepcaoTotal = totalFinal;
                 const elTotal = document.getElementById(`tot-${p.id}`);
                 if(elTotal) {
@@ -880,7 +881,7 @@
             if(penDefesa > 0) elCA.classList.replace('text-white', 'text-red-400'); else elCA.classList.replace('text-red-400', 'text-white');
 
             document.getElementById('percepcao-passiva').innerText = 10 + percepcaoTotal;
-            document.getElementById('valor-cd').innerText = 10 + bonusNivel + baseAttrs[document.getElementById('attr-cd').value];
+            document.getElementById('valor-cd').innerText = 10 + bonusMaestria + baseAttrs[document.getElementById('attr-cd').value];
 
             // --- LÓGICA DO PROTOCOLO DE CORROSÃO ---
             let maxCorrosao = Math.max(0, Math.floor(baseAttrs.int / 2));
@@ -888,11 +889,12 @@
             
             if (configTema.preset === 'vinteum' && configTema.modoBatalha) {
                 bonusDeslocamentoCorrosao = 6;
-                // Preenche os valores na tabela
-                document.getElementById('corr-atk').innerText = '+' + Math.floor(bonusNivel / 2);
-                document.getElementById('corr-dmg').innerText = '+' + bonusNivel;
+                // Preenche os valores na tabela com o BT exato
+                document.getElementById('corr-atk').innerText = '+' + Math.floor(bonusMaestria / 2);
+                document.getElementById('corr-dmg').innerText = '+' + bonusMaestria;
                 
-                let dcTeste = 15 + bonusNivel + corrosaoAtual + Math.floor(nivel / 2);
+                // Cálculo exato da imagem: 15 + BT + Corrosão + (Nv / 2)
+                let dcTeste = 15 + bonusMaestria + corrosaoAtual + Math.floor(nivel / 2);
                 document.getElementById('corr-dc').innerText = dcTeste;
 
                 // Animação de limite
