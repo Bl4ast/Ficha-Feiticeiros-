@@ -974,7 +974,7 @@
                             <div class="col-span-4"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Dano</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${atk.dano}" onchange="atualizarAtaque(${index}, 'dano', this.value)"></div>
                             <div class="col-span-2"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Crítico</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 text-center transition-colors" value="${atk.critico}" onchange="atualizarAtaque(${index}, 'critico', this.value)"></div>
                             <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Alcance</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${atk.alcance}" onchange="atualizarAtaque(${index}, 'alcance', this.value)"></div>
-                            <div class="col-span-12"><input type="text" class="input-field bg-slate-900 text-xs p-2 mt-1 transition-colors" value="${atk.especial || ''}" placeholder="Especial / Observações..." onchange="atualizarAtaque(${index}, 'especial', this.value)"></div>
+                            <div class="col-span-12"><textarea class="input-field bg-slate-900 text-xs p-2 mt-1 h-16 resize-y w-full transition-colors" placeholder="Especial / Observações..." onchange="atualizarAtaque(${index}, 'especial', this.value)">${atk.especial || ''}</textarea></div>
                         </div>
                     </div>`;
             });
@@ -994,7 +994,7 @@
                             <div class="col-span-3"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Custo</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 text-center transition-colors" value="${tec.custo}" onchange="atualizarTecnica(${index}, 'custo', this.value)"></div>
                             <div class="col-span-4"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Teste</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${tec.teste || ''}" onchange="atualizarTecnica(${index}, 'teste', this.value)"></div>
                             <div class="col-span-5"><label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">Dano/Cura</label><input type="text" class="input-field bg-slate-900 text-sm p-1.5 mt-1 transition-colors" value="${tec.dano}" onchange="atualizarTecnica(${index}, 'dano', this.value)"></div>
-                            <div class="col-span-12"><input type="text" class="input-field bg-slate-900 text-xs p-2 mt-1 transition-colors" value="${tec.efeito || ''}" placeholder="Efeito da Técnica..." onchange="atualizarTecnica(${index}, 'efeito', this.value)"></div>
+                            <div class="col-span-12"><textarea class="input-field bg-slate-900 text-sm p-2 mt-1 h-24 resize-y w-full transition-colors" placeholder="Descrição detalhada e Efeitos da Técnica..." onchange="atualizarTecnica(${index}, 'efeito', this.value)">${tec.efeito || ''}</textarea></div>
                         </div>
                     </div>`;
             });
