@@ -513,8 +513,8 @@
                 <!-- Perícias (7 colunas) -->
                 <div class="lg:col-span-7 bg-cardBg p-4 rounded-lg border border-slate-700 transition-colors">
                     <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3 transition-colors">
-                        <h2 class="text-xl font-bold text-cyan-400 transition-colors"><i class="fas fa-list-check mr-2"></i>Perícias</h2>
-                        <span class="text-sm text-slate-400 transition-colors">Total = Atributo + Treino + Bônus Nível (<span id="txt-bonus-nivel" class="font-bold text-white transition-colors">0</span>)</span>
+                        <h2 class="text-xl font-bold text-cyan-400 transition-colors"><i class="fas fa-list-check mr-2"></i>Perícias & Maestria</h2>
+                        <span class="text-sm text-slate-400 transition-colors">Total = Atributo + Treino (Maestria) + Bônus (<span id="txt-bonus-nivel" class="font-bold text-white transition-colors">0</span>)</span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="lista-pericias">
                         <!-- Perícias via JS -->
@@ -811,7 +811,9 @@
                     <div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-700 transition-colors">
                         <span class="text-xs text-slate-300 w-1/2 cursor-default truncate transition-colors" title="Atributo: ${p.attr.toUpperCase()}">${p.nome} <span class="text-[10px] text-slate-500 transition-colors">(${p.attr.toUpperCase()})</span></span>
                         <div class="flex items-center gap-2">
-                            <input type="number" id="per-${p.id}" class="input-field w-12 p-1 text-center text-sm" value="0" onchange="calcularDerivados()">
+                            <div class="flex flex-col items-center">
+                                <input type="number" id="per-${p.id}" class="input-field w-12 p-1 text-center text-sm" value="0" min="0" onchange="calcularDerivados()" title="Nível de Treinamento (Maestria)">
+                            </div>
                             <span class="text-cyan-400 font-bold w-8 text-right text-base transition-colors" id="tot-${p.id}">+0</span>
                         </div>
                     </div>`;
@@ -976,15 +978,25 @@
                 lista.innerHTML += `
                     <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 relative group transition-colors">
                         <button onclick="removerTreinamento(${index})" class="absolute top-2 right-2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-times"></i></button>
-                        <select class="input-field bg-transparent border-b border-transparent focus:border-green-500 px-1 py-1 mb-2 text-sm font-bold text-green-300 w-11/12 transition-colors" onchange="atualizarTreinamento(${index}, 'tipo', this.value)">
-                            <option value="${t.tipo}" selected hidden>${t.tipo}</option>${optionsHtml}
-                        </select>
+                        
+                        <div class="flex items-center gap-2 mb-2 w-11/12">
+                            <select class="input-field bg-transparent border-b border-transparent focus:border-green-500 px-1 py-1 text-sm font-bold text-green-300 flex-1 transition-colors" onchange="atualizarTreinamento(${index}, 'tipo', this.value)">
+                                <option value="${t.tipo}" selected hidden>${t.tipo}</option>${optionsHtml}
+                            </select>
+                            <div class="flex items-center bg-slate-900 rounded border border-slate-600 px-2 py-1 gap-1" title="Nível de Treinamento (igual ao Nível de Maestria)">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Nvl:</span>
+                                <input type="number" class="bg-transparent text-center text-white font-bold w-8 text-sm outline-none" value="${t.nivel || 1}" min="1" onchange="atualizarTreinamento(${index}, 'nivel', this.value)">
+                            </div>
+                        </div>
+
                         <input type="text" class="input-field text-sm font-bold text-green-100 bg-slate-900 px-2 py-1 mb-2 w-full transition-colors ${t.tipo === 'Personalizado' ? '' : 'hidden'}" value="${t.nomeCustom || ''}" placeholder="Nome do Treinamento" onchange="atualizarTreinamento(${index}, 'nomeCustom', this.value)">
                         <textarea class="input-field bg-slate-900 text-sm p-2 h-16 resize-y transition-colors" placeholder="Regras e efeitos deste treinamento..." onchange="atualizarTreinamento(${index}, 'desc', this.value)">${t.desc || ''}</textarea>
+                        
+                        <div class="text-[10px] text-green-400 font-bold mt-1 text-right">Maestria: Nível ${t.nivel || 1}</div>
                     </div>`;
             });
         }
-        function adicionarTreinamento() { treinamentos.push({ tipo: "Combate Corpo-a-Corpo", nomeCustom: "", desc: "" }); renderizarTreinamentos(); }
+        function adicionarTreinamento() { treinamentos.push({ tipo: "Combate Corpo-a-Corpo", nivel: 1, nomeCustom: "", desc: "" }); renderizarTreinamentos(); }
         function removerTreinamento(i) { treinamentos.splice(i, 1); renderizarTreinamentos(); }
         function atualizarTreinamento(i, c, v) { treinamentos[i][c] = v; renderizarTreinamentos(); }
 
@@ -1384,6 +1396,7 @@
         }
 
         function carregarBackup() {
+            inicializarPericias(); // <--- CORREÇÃO: Garante que as perícias existem na tela antes de jogar os dados salvos nelas
             const backupStr = localStorage.getItem('rpg_backup_feiticeiros');
             if (backupStr) {
                 try { const dados = JSON.parse(backupStr); aplicarDadosNaFicha(dados); } 
@@ -1392,7 +1405,7 @@
         }
 
         function startFichaLimpa() {
-            inicializarPericias(); mudarClasse(); renderizarCondicoes(); renderizarDefesas();
+            mudarClasse(); renderizarCondicoes(); renderizarDefesas();
             renderizarVotos(); renderizarShikigamis(); renderizarTreinamentos(); renderizarHabs(); 
             renderizarInventario(); renderizarAtaques(); renderizarTecnicas(); aplicarTema(configTema);
         }
