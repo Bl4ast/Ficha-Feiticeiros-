@@ -468,6 +468,48 @@
                 </div>
             </div>
 
+            <!-- LINHA 3.5 - PAINEL A INEXISTÊNCIA (ANIQUILADOR DO DESTINO) -->
+            <div class="bg-cardBg p-5 rounded-lg border border-fuchsia-900/50 shadow-[0_0_15px_rgba(192,132,252,0.1)] transition-colors flex flex-col md:flex-row gap-6">
+                <!-- O Vazio -->
+                <div class="flex-1 flex flex-col justify-center">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-bold text-fuchsia-400 font-[Oswald] uppercase tracking-wider"><i class="fas fa-circle-notch mr-2"></i>O Vazio</h2>
+                        <div class="flex items-center gap-3">
+                            <button onclick="alterarVazio(-1)" class="bg-fuchsia-900 hover:bg-fuchsia-700 text-white w-8 h-8 rounded-full font-bold transition shadow-lg">-</button>
+                            <span class="text-4xl font-bold text-white transition-colors" id="vazio-atual">0</span>
+                            <button onclick="alterarVazio(1)" class="bg-fuchsia-900 hover:bg-fuchsia-700 text-white w-8 h-8 rounded-full font-bold transition shadow-lg">+</button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded border border-fuchsia-900/30">
+                        <h3 class="text-[10px] text-fuchsia-300 uppercase font-bold mb-1 border-b border-fuchsia-900/50 pb-1">Efeitos Ativos (Auto-Aplicados)</h3>
+                        <p id="vazio-buffs-texto" class="text-sm text-slate-300 leading-relaxed font-semibold transition-colors">
+                            Nenhum efeito ativo.
+                        </p>
+                        <p id="vazio-buffs-dano" class="text-sm text-red-400 font-bold mt-1 transition-colors"></p>
+                    </div>
+                </div>
+
+                <!-- O Fim -->
+                <div class="flex-1 flex flex-col justify-center border-t md:border-t-0 md:border-l border-slate-700 pt-4 md:pt-0 md:pl-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-bold text-red-500 font-[Oswald] uppercase tracking-wider"><i class="fas fa-moon mr-2"></i>Acúmulo do Fim</h2>
+                        <div class="flex items-center gap-3">
+                            <button onclick="alterarFim(-1)" class="bg-red-950 hover:bg-red-800 border border-red-800 text-white w-8 h-8 rounded-full font-bold transition shadow-lg">-</button>
+                            <span class="text-4xl font-bold text-red-100 transition-colors" id="fim-atual">0</span>
+                            <span class="text-xl text-red-600 font-bold">/ 12</span>
+                            <button onclick="alterarFim(1)" class="bg-red-950 hover:bg-red-800 border border-red-800 text-white w-8 h-8 rounded-full font-bold transition shadow-lg">+</button>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1 mb-2 leading-tight">
+                        Ganha 1 acúmulo sempre que alguém na cena recebe uma condição (zera no fim da cena).<br>
+                        <b>Sonho Cortado Canta em Vermelho:</b> Custa 9 Acúmulos + Sua Existência (1 Memória).
+                    </p>
+                    <div class="w-full bg-slate-900 h-3 mt-1 rounded-full overflow-hidden border border-red-900/50">
+                        <div id="bar-fim" class="bg-gradient-to-r from-red-800 to-red-500 h-full transition-all duration-300 ease-out shadow-[0_0_10px_red]" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- NOVO: PAINEL PROTOCOLO DE CORROSÃO (Só aparece no Tema Vinteum + Modo Batalha) -->
             <div id="painel-corrosao" class="hidden grid-cols-1 md:grid-cols-3 gap-4 bg-black/80 border-2 border-red-800 p-5 rounded-lg shadow-[0_0_15px_rgba(255,0,60,0.5)] transition-all">
                 <div class="md:col-span-3 text-center mb-2">
@@ -546,15 +588,18 @@
                         </div>
                     </div>
 
-                    <!-- Redução de Dano (NOVO) -->
+                    <!-- Redução de Dano -->
                     <div class="bg-cardBg p-4 rounded-lg border border-indigo-900/50 transition-colors">
                         <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2 transition-colors">
                             <h2 class="text-lg font-bold text-indigo-400 transition-colors"><i class="fas fa-shield-virus mr-2"></i>Redução de Dano (RD)</h2>
                         </div>
                         <div class="flex flex-col gap-3">
                             <div class="flex items-center justify-between">
-                                <label class="text-xs text-slate-400 uppercase font-bold transition-colors">RD Geral (Todos os Danos)</label>
-                                <input type="number" id="rd-geral" class="input-field w-20 text-center font-bold text-lg p-1 bg-slate-900 transition-colors" value="0" onchange="autoSalvar()">
+                                <label class="text-xs text-slate-400 uppercase font-bold transition-colors">RD Geral (Base)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="rd-geral-base" class="input-field w-16 text-center font-bold text-lg p-1 bg-slate-900 transition-colors" value="0" onchange="calcularDerivados()">
+                                    <span class="text-sm font-bold text-fuchsia-400 transition-colors hidden" id="rd-total-display" title="Total com Buffs">+0</span>
+                                </div>
                             </div>
                             <div>
                                 <label class="text-[10px] text-slate-400 uppercase font-bold transition-colors">RDs Específicas / Condicionais</label>
@@ -800,7 +845,9 @@
         let treinamentos = []; let habilidades = { origem: [], espec: [], talento: [] };
         let condicoes = []; let defesas = []; let votos = []; let shikigamis = [];
         let configTema = { preset: "padrao", cor: "#7c3aed", fonte: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", modoBatalha: false };
-        let corrosaoAtual = 0; // Estado da Corrosão
+        let corrosaoAtual = 0; 
+        let vazioAtual = 0; // Acúmulo do Vazio
+        let fimAtual = 0;   // Acúmulo do Fim
         let petalInterval = null;
 
         // --- INICIALIZAR PERÍCIAS ---
@@ -827,6 +874,24 @@
                 document.getElementById('pe-base').value = classesRPG[val].peBase; document.getElementById('pe-nivel').value = classesRPG[val].peNivel;
             }
             calcularDerivados();
+        }
+
+        // --- CONTROLE DE O VAZIO E O FIM ---
+        function alterarVazio(valor) {
+            vazioAtual += valor;
+            if (vazioAtual < 0) vazioAtual = 0;
+            document.getElementById('vazio-atual').innerText = vazioAtual;
+            calcularDerivados();
+            autoSalvar();
+        }
+
+        function alterarFim(valor) {
+            fimAtual += valor;
+            if (fimAtual < 0) fimAtual = 0;
+            if (fimAtual > 12) fimAtual = 12;
+            document.getElementById('fim-atual').innerText = fimAtual;
+            document.getElementById('bar-fim').style.width = (fimAtual / 12 * 100) + '%';
+            autoSalvar();
         }
 
         function calcularDerivados() {
@@ -867,11 +932,57 @@
 
             for(let key in baseAttrs) { document.getElementById(`mod-${key}`).innerText = baseAttrs[key] >= 0 ? '+' + baseAttrs[key] : baseAttrs[key]; }
 
-            // CORREÇÃO: Bônus de Maestria (BT) baseado na tabela oficial (+2 nos nv 1-4, +3 nos nv 5-8, etc.)
+            // CORREÇÃO: Bônus de Maestria (BT)
             const bonusMaestria = Math.ceil(nivel / 4) + 1; 
             document.getElementById('txt-bonus-nivel').innerText = '+' + bonusMaestria;
             let percepcaoTotal = 0;
 
+            // --- LÓGICA DO ACÚMULO DO VAZIO (BUFFS) ---
+            let bVazioDano = vazioAtual;
+            let bVazioAcerto = 0, bVazioCD = 0, bVazioRD = 0, bVazioCA = 0, bVazioTR = 0;
+            let bVazioDado = Math.floor(vazioAtual / 5);
+            let bVazioNivelDano = Math.floor(vazioAtual / 6);
+            
+            if (vazioAtual > 0) {
+                const tabela = [
+                    { a: 0, r: 0, t: 0 },
+                    { a: 1, r: 1, t: 1 }, // L1
+                    { a: 2, r: 1, t: 1 }, // L2
+                    { a: 2, r: 2, t: 1 }, // L3
+                    { a: 3, r: 2, t: 2 }, // L4
+                    { a: 3, r: 2, t: 2 }, // L5
+                    { a: 4, r: 2, t: 2 }  // L6
+                ];
+                let ref = vazioAtual > 6 ? 6 : vazioAtual;
+                bVazioAcerto = tabela[ref].a;
+                bVazioCD = tabela[ref].a;
+                bVazioRD = tabela[ref].r;
+                bVazioCA = tabela[ref].r;
+                bVazioTR = tabela[ref].t;
+
+                if (vazioAtual > 6) {
+                    let extra = vazioAtual - 6;
+                    bVazioAcerto += Math.floor(extra / 2);
+                    bVazioCD += Math.floor(extra / 2);
+                    bVazioRD += Math.floor(extra / 3);
+                    bVazioCA += Math.floor(extra / 3);
+                    bVazioTR += Math.floor(extra / 4);
+                }
+            }
+
+            // Atualizar UI de Buffs do Vazio
+            let buffsTexto = "Nenhum efeito ativo.";
+            let buffsDano = "";
+            if (vazioAtual > 0) {
+                buffsTexto = `+${bVazioAcerto} Acerto e CD | +${bVazioCA} CA | +${bVazioRD} RD Geral | +${bVazioTR} em TODOS os Testes de Resistência`;
+                buffsDano = `+${bVazioDano} Dano Fixo em Tudo`;
+                if (bVazioDado > 0) buffsDano += ` | +${bVazioDado}d de Dano na Arma`;
+                if (bVazioNivelDano > 0) buffsDano += ` | +${bVazioNivelDano} Nível(is) de Dano`;
+            }
+            document.getElementById('vazio-buffs-texto').innerText = buffsTexto;
+            document.getElementById('vazio-buffs-dano').innerText = buffsDano;
+
+            // Perícias
             periciasBase.forEach(p => {
                 const treino = parseInt(document.getElementById(`per-${p.id}`)?.value) || 0;
                 const totalFinal = (baseAttrs[p.attr] - penAtributos[p.attr]) + treino + bonusMaestria - penGlobal;
@@ -886,7 +997,8 @@
                 }
             });
 
-            const caTotal = 10 + baseAttrs.des + (parseInt(document.getElementById('ca-bonus').value) || 0) - penDefesa;
+            // CA, CD e RD aplicando Buffs do Vazio
+            const caTotal = 10 + baseAttrs.des + (parseInt(document.getElementById('ca-bonus').value) || 0) - penDefesa + bVazioCA;
             const elCA = document.getElementById('valor-ca'); elCA.innerText = caTotal;
             elCA.classList.remove('text-white', 'text-red-400', 'text-cyan-400');
             if(penDefesa > 0) elCA.classList.add('text-red-400'); 
@@ -894,7 +1006,15 @@
             else elCA.classList.add('text-white');
 
             document.getElementById('percepcao-passiva').innerText = 10 + percepcaoTotal;
-            document.getElementById('valor-cd').innerText = 10 + bonusMaestria + baseAttrs[document.getElementById('attr-cd').value];
+            document.getElementById('valor-cd').innerText = 10 + bonusMaestria + baseAttrs[document.getElementById('attr-cd').value] + bVazioCD;
+
+            // Atualiza Redução de Dano (Base + Buff Vazio)
+            let rdBase = parseInt(document.getElementById('rd-geral-base').value) || 0;
+            let rdTotal = rdBase + bVazioRD;
+            const elRdTotal = document.getElementById('rd-total-display');
+            elRdTotal.innerText = `= ${rdTotal}`;
+            if (bVazioRD > 0) elRdTotal.classList.remove('hidden');
+            else elRdTotal.classList.add('hidden');
 
             // --- LÓGICA DO PROTOCOLO DE CORROSÃO ---
             let maxCorrosao = Math.max(0, Math.floor(baseAttrs.int / 2));
@@ -1305,7 +1425,6 @@
         function toggleModoBatalha() {
             configTema.modoBatalha = !configTema.modoBatalha;
             
-            // Se está DESLIGANDO o modo batalha e tiver corrosão, aplica exaustão
             if (!configTema.modoBatalha && corrosaoAtual > 0) {
                 mostrarModal("Protocolo de Corrosão: Encerrado", `O Modo de Corrosão foi desativado. O vírus parou de agir, mas o desgaste no seu sistema deixou você sob a condição de EXAUSTO por ${corrosaoAtual} rodada(s)!`);
                 corrosaoAtual = 0;
@@ -1349,13 +1468,21 @@
                     deslocamento: document.getElementById('deslocamento').value, 
                     attrCD: document.getElementById('attr-cd').value, 
                     caBonus: document.getElementById('ca-bonus').value,
-                    rdGeral: document.getElementById('rd-geral').value,
+                    rdGeral: document.getElementById('rd-geral-base').value,
                     rdEspecifica: document.getElementById('rd-especifica').value
                 },
                 classeInfo: { pvBase: document.getElementById('pv-base').value, pvNivel: document.getElementById('pv-nivel').value, peBase: document.getElementById('pe-base').value, peNivel: document.getElementById('pe-nivel').value },
                 atributos: { for: document.getElementById('attr-for').value, des: document.getElementById('attr-des').value, con: document.getElementById('attr-con').value, int: document.getElementById('attr-int').value, sab: document.getElementById('attr-sab').value, pre: document.getElementById('attr-pre').value },
                 pericias: treinoPericias,
-                status: { pvAdicional: document.getElementById('pv-adicional').value, peAdicional: document.getElementById('pe-adicional').value, pvAtual: document.getElementById('pv-atual').value, peAtual: document.getElementById('pe-atual').value, corrosaoAtual: corrosaoAtual },
+                status: { 
+                    pvAdicional: document.getElementById('pv-adicional').value, 
+                    peAdicional: document.getElementById('pe-adicional').value, 
+                    pvAtual: document.getElementById('pv-atual').value, 
+                    peAtual: document.getElementById('pe-atual').value, 
+                    corrosaoAtual: corrosaoAtual,
+                    vazioAtual: vazioAtual,
+                    fimAtual: fimAtual
+                },
                 condicoes: condicoes, defesas: defesas, votos: votos, shikigamis: shikigamis, treinamentos: treinamentos,
                 habilidadesDin: habilidades, inventario: inventario, ataques: ataques, tecnicas: tecnicas,
                 anotacoes: document.getElementById('anotacoes').value,
@@ -1374,10 +1501,10 @@
                 document.getElementById('deslocamento').value = dados.secundarios.deslocamento || 9;
                 document.getElementById('attr-cd').value = dados.secundarios.attrCD || 'pre'; 
                 document.getElementById('ca-bonus').value = dados.secundarios.caBonus || 0;
-                if(document.getElementById('rd-geral')) document.getElementById('rd-geral').value = dados.secundarios.rdGeral || 0;
+                if(document.getElementById('rd-geral-base')) document.getElementById('rd-geral-base').value = dados.secundarios.rdGeral || 0;
                 if(document.getElementById('rd-especifica')) document.getElementById('rd-especifica').value = dados.secundarios.rdEspecifica || '';
             } else {
-                if(document.getElementById('rd-geral')) document.getElementById('rd-geral').value = 0;
+                if(document.getElementById('rd-geral-base')) document.getElementById('rd-geral-base').value = 0;
                 if(document.getElementById('rd-especifica')) document.getElementById('rd-especifica').value = '';
             }
 
@@ -1397,6 +1524,12 @@
                 document.getElementById('pv-adicional').value = dados.status.pvAdicional || 0; document.getElementById('pe-adicional').value = dados.status.peAdicional || 0;
                 document.getElementById('pv-atual').value = dados.status.pvAtual || 0; document.getElementById('pe-atual').value = dados.status.peAtual || 0;
                 corrosaoAtual = dados.status.corrosaoAtual || 0;
+                vazioAtual = dados.status.vazioAtual || 0;
+                fimAtual = dados.status.fimAtual || 0;
+                
+                document.getElementById('vazio-atual').innerText = vazioAtual;
+                document.getElementById('fim-atual').innerText = fimAtual;
+                document.getElementById('bar-fim').style.width = (fimAtual / 12 * 100) + '%';
             }
 
             inventario = dados.inventario || []; 
@@ -1423,7 +1556,7 @@
         }
 
         function carregarBackup() {
-            inicializarPericias(); // <--- CORREÇÃO: Garante que as perícias existem na tela antes de jogar os dados salvos nelas
+            inicializarPericias(); 
             const backupStr = localStorage.getItem('rpg_backup_feiticeiros');
             if (backupStr) {
                 try { const dados = JSON.parse(backupStr); aplicarDadosNaFicha(dados); } 
