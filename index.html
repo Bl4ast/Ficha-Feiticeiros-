@@ -857,6 +857,14 @@
                 if(n === "Indefeso" || n === "Inconsciente" || n === "Paralisado" || n === "Preso") penDefesa += 10;
             });
 
+            // --- LÓGICA EXCLUSIVA DO TEMA VINTEUM: INVERTER E DOBRAR DEBUFFS ---
+            if (configTema.preset === 'vinteum') {
+                penGlobal *= -2;
+                penDefesa *= -2;
+                for(let key in penAtributos) { penAtributos[key] *= -2; }
+                if (multDeslocamento < 1) multDeslocamento = 2; // Penalidade de movimento vira o dobro de velocidade
+            }
+
             for(let key in baseAttrs) { document.getElementById(`mod-${key}`).innerText = baseAttrs[key] >= 0 ? '+' + baseAttrs[key] : baseAttrs[key]; }
 
             // CORREÇÃO: Bônus de Maestria (BT) baseado na tabela oficial (+2 nos nv 1-4, +3 nos nv 5-8, etc.)
@@ -871,14 +879,19 @@
                 const elTotal = document.getElementById(`tot-${p.id}`);
                 if(elTotal) {
                     elTotal.innerText = totalFinal >= 0 ? '+' + totalFinal : totalFinal;
-                    if(penGlobal > 0 || penAtributos[p.attr] > 0) elTotal.classList.replace('text-cyan-400', 'text-red-400');
-                    else elTotal.classList.replace('text-red-400', 'text-cyan-400');
+                    elTotal.classList.remove('text-cyan-400', 'text-red-400', 'text-emerald-400');
+                    if(penGlobal > 0 || penAtributos[p.attr] > 0) elTotal.classList.add('text-red-400');
+                    else if(penGlobal < 0 || penAtributos[p.attr] < 0) elTotal.classList.add('text-emerald-400');
+                    else elTotal.classList.add('text-cyan-400');
                 }
             });
 
             const caTotal = 10 + baseAttrs.des + (parseInt(document.getElementById('ca-bonus').value) || 0) - penDefesa;
             const elCA = document.getElementById('valor-ca'); elCA.innerText = caTotal;
-            if(penDefesa > 0) elCA.classList.replace('text-white', 'text-red-400'); else elCA.classList.replace('text-red-400', 'text-white');
+            elCA.classList.remove('text-white', 'text-red-400', 'text-cyan-400');
+            if(penDefesa > 0) elCA.classList.add('text-red-400'); 
+            else if(penDefesa < 0) elCA.classList.add('text-cyan-400');
+            else elCA.classList.add('text-white');
 
             document.getElementById('percepcao-passiva').innerText = 10 + percepcaoTotal;
             document.getElementById('valor-cd').innerText = 10 + bonusMaestria + baseAttrs[document.getElementById('attr-cd').value];
@@ -915,20 +928,32 @@
             const totalBadge = document.getElementById('deslocamento-total');
             
             let deslocBase = parseInt(inputDesloc.value) || 9;
+            let deslocFinal = Math.floor(deslocBase * multDeslocamento);
             
-            if (bonusDeslocamentoCorrosao > 0) {
+            if (bonusDeslocamentoCorrosao > 0 || multDeslocamento !== 1) {
                 totalBadge.classList.remove('hidden');
-                totalBadge.innerText = (deslocBase + bonusDeslocamentoCorrosao) + "m";
+                totalBadge.innerText = (deslocFinal + bonusDeslocamentoCorrosao) + "m";
             } else {
                 totalBadge.classList.add('hidden');
             }
 
+            inputDesloc.classList.remove('text-red-500', 'text-cyan-400');
+            alertaDesloc.classList.remove('text-red-400', 'text-cyan-400', 'text-emerald-400');
+
             if(multDeslocamento < 1) {
-                inputDesloc.classList.add('text-red-500'); alertaDesloc.classList.remove('hidden');
+                inputDesloc.classList.add('text-red-500'); 
+                alertaDesloc.classList.remove('hidden');
+                alertaDesloc.classList.add('text-red-400');
                 alertaDesloc.innerText = multDeslocamento === 0 ? "Imóvel (0m)" : "Metade (Penalizado)";
                 totalBadge.classList.add('bg-slate-700'); totalBadge.classList.remove('bg-red-600', 'shadow-[0_0_5px_red]');
+            } else if (multDeslocamento > 1) {
+                inputDesloc.classList.add('text-cyan-400'); 
+                alertaDesloc.classList.remove('hidden');
+                alertaDesloc.classList.add('text-emerald-400');
+                alertaDesloc.innerText = "Acelerado (x2)";
+                totalBadge.classList.remove('bg-slate-700'); totalBadge.classList.add('bg-red-600', 'shadow-[0_0_5px_red]');
             } else { 
-                inputDesloc.classList.remove('text-red-500'); alertaDesloc.classList.add('hidden');
+                alertaDesloc.classList.add('hidden');
                 totalBadge.classList.remove('bg-slate-700'); totalBadge.classList.add('bg-red-600', 'shadow-[0_0_5px_red]');
             }
 
