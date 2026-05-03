@@ -6,14 +6,13 @@
     <title>Ficha de RPG - Feiticeiros & Maldições</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Novas Fontes Adicionadas (Cinzel para o visual Mágico/Premium) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Courier+Prime&family=Lora:ital@0;1;400;700&family=Oswald:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Courier+Prime&family=Lora:ital@0;1;400;700&family=Oswald:wght@400;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --color-cursed: #7c3aed;
             --color-cursed-dark: #5b21b6;
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-main: 'Poppins', sans-serif; /* Poppins como padrão agora! */
             --cyan-glow: rgba(0, 255, 255, 0.8);
         }
     </style>
@@ -30,7 +29,7 @@
                     },
                     fontFamily: {
                         cinzel: ['Cinzel', 'serif'],
-                        roboto: ['Roboto', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
                     }
                 }
             }
@@ -63,19 +62,19 @@
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
-        .input-field { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.375rem; padding: 0.5rem; color: white; width: 100%; transition: all 0.3s ease; }
+        .input-field { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.375rem; padding: 0.5rem; color: white; width: 100%; transition: all 0.3s ease; font-family: var(--font-main); }
         .input-field:focus { outline: none; border-color: var(--color-cursed); box-shadow: 0 0 5px var(--color-cursed-dark); }
         
-        .stat-circle { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--color-cursed); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; background: #1e293b; transition: all 0.3s ease; }
+        .stat-circle { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--color-cursed); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; background: #1e293b; transition: all 0.3s ease; font-family: var(--font-main);}
         .mod-badge { position: absolute; bottom: -5px; right: -5px; background-color: var(--color-cursed); color: white; border-radius: 9999px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; border: 2px solid #1e293b; transition: all 0.3s ease; }
 
-        .tab-btn { padding: 0.5rem 1.5rem; font-weight: bold; border-radius: 0.5rem 0.5rem 0 0; transition: all 0.3s ease; border: 1px solid transparent; border-bottom: none; position: relative; z-index: 10; }
+        .tab-btn { padding: 0.5rem 1.5rem; font-weight: bold; border-radius: 0.5rem 0.5rem 0 0; transition: all 0.3s ease; border: 1px solid transparent; border-bottom: none; position: relative; z-index: 10; font-family: var(--font-main);}
         .tab-active { background-color: #1e293b; color: var(--color-cursed); border-color: #334155; }
         .tab-inactive { background-color: #0f172a; color: #64748b; }
         .tab-inactive:hover { color: #e2e8f0; background-color: #1e293b; }
 
         /* ================= TEMA VINTEUM ================= */
-        .tema-vinteum { background-color: #05080e; font-family: 'Roboto', sans-serif; }
+        .tema-vinteum { background-color: #05080e; font-family: 'Poppins', sans-serif; }
         .tema-vinteum #hex-background { opacity: 1; }
         .tema-vinteum .bg-cardBg { background-color: rgba(16, 22, 34, 0.85) !important; backdrop-filter: blur(4px); border: 1px solid #00ffff !important; box-shadow: 0 0 12px rgba(0, 255, 255, 0.2); }
         .tema-vinteum .bg-slate-800 { background-color: rgba(22, 32, 48, 0.9) !important; border-color: #008b8b !important; }
@@ -102,14 +101,14 @@
         .tema-vinteum.modo-batalha .tab-active { background-color: #0a0000 !important; border-color: #ff003c !important; color: #ff003c !important; }
 
         /* ================= TEMA ZOLTRAAK (Frieren) ================= */
-        .tema-zoltraak { background-color: #07090f; font-family: 'Roboto', sans-serif; color: #f1f5f9; }
+        .tema-zoltraak { background-color: #07090f; font-family: 'Poppins', sans-serif; color: #f1f5f9; }
         #magic-circle-bg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 150vw; height: 150vw; max-width: 1200px; max-height: 1200px; pointer-events: none; z-index: -1; opacity: 0; transition: opacity 1s ease; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Cg fill='none' stroke='%23a78bfa' stroke-width='1.5' opacity='0.15'%3E%3Ccircle cx='250' cy='250' r='240'/%3E%3Ccircle cx='250' cy='250' r='220'/%3E%3Ccircle cx='250' cy='250' r='150'/%3E%3Cpolygon points='250,30 440,360 60,360'/%3E%3Cpolygon points='250,470 60,140 440,140'/%3E%3Ccircle cx='250' cy='70' r='30'/%3E%3Ccircle cx='95' cy='335' r='30'/%3E%3Ccircle cx='405' cy='335' r='30'/%3E%3C/g%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; background-size: contain; }
         .tema-zoltraak #magic-circle-bg { opacity: 1; animation: spin-slow 120s linear infinite; }
         @keyframes spin-slow { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
         .tema-zoltraak .bg-cardBg { background-color: rgba(13, 17, 30, 0.85) !important; backdrop-filter: blur(8px); border: 1px solid rgba(139, 92, 246, 0.2) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
         .tema-zoltraak .bg-slate-800 { background-color: rgba(22, 28, 45, 0.6) !important; border-color: rgba(139, 92, 246, 0.15) !important; }
-        .tema-zoltraak .bg-slate-900, .tema-zoltraak .input-field { background-color: rgba(6, 8, 15, 0.8) !important; color: #f8fafc !important; border-color: rgba(139, 92, 246, 0.3) !important; font-family: 'Roboto', sans-serif;}
+        .tema-zoltraak .bg-slate-900, .tema-zoltraak .input-field { background-color: rgba(6, 8, 15, 0.8) !important; color: #f8fafc !important; border-color: rgba(139, 92, 246, 0.3) !important; }
         .tema-zoltraak .input-field:focus { border-color: #a78bfa !important; box-shadow: 0 0 10px rgba(167, 139, 250, 0.3); }
         .tema-zoltraak .border-slate-700 { border-color: rgba(139, 92, 246, 0.2) !important; }
         .tema-zoltraak .text-cursed { color: #d8b4fe !important; text-shadow: 0 0 8px rgba(167,139,250,0.5); font-family: 'Cinzel', serif;} 
@@ -210,7 +209,6 @@
 
     <div class="max-w-[98%] mx-auto space-y-4 content-wrapper">
         
-        <!-- Cabeçalho -->
         <div class="flex flex-col xl:flex-row justify-between items-center bg-cardBg p-4 rounded-lg border border-slate-700 shadow-lg gap-4 transition-colors relative">
             <div>
                 <h1 id="main-title" class="text-3xl font-bold text-transparent bg-clip-text text-cursed" style="background-image: linear-gradient(to right, #c084fc, var(--color-cursed));">Feiticeiros & Maldições</h1>
@@ -219,13 +217,10 @@
                 </div>
             </div>
             <div class="flex flex-wrap gap-2 justify-center items-center">
-                <!-- Botões Especiais de Modo -->
                 <button id="btn-modo-batalha" onclick="toggleModoBatalha()" class="hidden px-4 py-2 rounded text-sm font-bold mr-1"><i class="fas fa-bolt mr-1"></i> MODO BATALHA</button>
                 <button id="btn-modo-serio" onclick="toggleModoSerio()" class="px-4 py-2 rounded text-sm mr-2"><i class="fas fa-meteor mr-1"></i> MODO SÉRIO</button>
                 
-                <div class="w-px h-6 bg-slate-600 mx-1"></div> <!-- Separador -->
-
-                <button onclick="abrirConfirmModal()" class="bg-red-900/40 hover:bg-red-800 border border-red-800/50 px-3 py-2 rounded text-sm transition font-medium text-red-300"><i class="fas fa-trash-alt mr-1"></i>Nova Ficha</button>
+                <div class="w-px h-6 bg-slate-600 mx-1"></div> <button onclick="abrirConfirmModal()" class="bg-red-900/40 hover:bg-red-800 border border-red-800/50 px-3 py-2 rounded text-sm transition font-medium text-red-300"><i class="fas fa-trash-alt mr-1"></i>Nova Ficha</button>
                 <button onclick="abrirConfigModal()" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-sm transition font-medium"><i class="fas fa-palette mr-1"></i>Personalizar</button>
                 <button onclick="exportarFicha()" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-sm transition font-medium"><i class="fas fa-download mr-1"></i>Salvar JSON</button>
                 <label class="bg-cursed hover:bg-cursedDark px-3 py-2 rounded text-sm transition cursor-pointer font-medium text-white shadow-md border-b-2 border-cursedDark">
@@ -235,14 +230,12 @@
             </div>
         </div>
 
-        <!-- Sistema de Abas -->
         <div class="flex space-x-2 border-b border-slate-700 px-2 transition-colors overflow-x-auto">
             <button onclick="mudarAba('principal')" id="btn-aba-principal" class="tab-btn tab-active whitespace-nowrap"><i class="fas fa-user mr-2"></i>Ficha Principal</button>
             <button onclick="mudarAba('grimorio')" id="btn-aba-grimorio" class="tab-btn tab-inactive whitespace-nowrap font-cinzel tracking-wider"><i class="fas fa-book-journal-whills mr-2"></i>Grimório Arcano</button>
             <button onclick="mudarAba('shikigamis')" id="btn-aba-shikigamis" class="tab-btn tab-inactive whitespace-nowrap"><i class="fas fa-ghost mr-2"></i>Shikigamis</button>
         </div>
 
-        <!-- ==================== ABA PRINCIPAL ==================== -->
         <div id="aba-principal" class="space-y-4">
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -276,7 +269,6 @@
                 </div>
             </div>
 
-            <!-- Atributos -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div class="lg:col-span-6 bg-cardBg p-4 rounded-lg border border-slate-700 transition-colors">
                     <div class="grid grid-cols-3 md:grid-cols-6 gap-4 justify-items-center">
@@ -302,14 +294,12 @@
                     <div class="bg-cardBg p-5 rounded-lg border border-red-900/50 transition-colors"><div class="flex justify-between items-center mb-2"><h2 class="text-sm font-bold text-red-400 uppercase"><i class="fas fa-heart mr-1"></i>Pontos de Vida</h2><div class="flex items-center gap-2 text-sm"><span class="text-slate-400 font-bold">+ Adicional:</span><input type="number" id="pv-adicional" class="input-field py-1 px-2 w-16 text-center text-white bg-slate-800" value="0" onchange="calcularDerivados()"><button onclick="curarTotal('pv')" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-white"><i class="fas fa-plus"></i> Máx</button></div></div><div class="flex items-center gap-2 text-3xl font-bold mt-2"><input type="number" id="pv-atual" class="input-field text-center text-red-400 w-28 text-4xl p-2 transition-colors" value="20" onchange="calcularDerivados()"><span class="text-slate-500">/</span><input type="number" id="pv-max" class="input-field text-center text-slate-400 w-24 bg-transparent border-none p-2" value="20" readonly></div><div class="w-full bg-slate-800 h-3 mt-3 rounded-full overflow-hidden border border-slate-700"><div id="bar-pv" class="bg-gradient-to-r from-red-600 to-red-400 h-full transition-all duration-500 ease-out" style="width: 100%"></div></div></div>
                     
                     <div class="bg-cardBg p-5 rounded-lg border border-purple-900/50 transition-colors relative">
-                        <!-- Selo de Modo Sério -->
                         <div id="selo-modo-serio" class="absolute -top-3 -right-3 bg-cyan-400 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-[0_0_10px_#00ffff] hidden border border-white">150% (x3) ATIVO</div>
                         
                         <div class="flex justify-between items-center mb-2"><h2 class="text-sm font-bold text-purple-400 uppercase"><i class="fas fa-fire mr-1"></i>Energia (PE)</h2><div class="flex items-center gap-2 text-sm"><span class="text-slate-400 font-bold">+ Adicional:</span><input type="number" id="pe-adicional" class="input-field py-1 px-2 w-16 text-center text-white bg-slate-800" value="0" onchange="calcularDerivados()"><button onclick="curarTotal('pe')" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-white"><i class="fas fa-plus"></i> Máx</button></div></div>
                         <div class="flex items-center gap-2 text-3xl font-bold mt-2"><input type="number" id="pe-atual" class="input-field text-center text-purple-400 w-28 text-4xl p-2 transition-colors" value="2" onchange="calcularDerivados()"><span class="text-slate-500">/</span><input type="number" id="pe-max" class="input-field text-center text-slate-400 w-24 bg-transparent border-none p-2" value="2" readonly></div>
                         <div class="w-full bg-slate-800 h-3 mt-3 rounded-full overflow-hidden border border-slate-700"><div id="bar-pe" class="bg-gradient-to-r from-purple-600 to-purple-400 h-full transition-all duration-500 ease-out" style="width: 100%"></div></div>
                         
-                        <!-- NOVO: EXAUSTÃO -->
                         <div class="mt-4 pt-3 border-t border-purple-900/50 flex justify-between items-center bg-black/20 p-2 rounded">
                             <span class="text-xs uppercase font-bold text-slate-400"><i class="fas fa-skull text-slate-500 mr-1"></i>Exaustão <span class="text-[9px] font-normal">(6 = Morte)</span></span>
                             <div class="flex items-center gap-3">
@@ -326,7 +316,6 @@
                 </div>
             </div>
 
-            <!-- PAINEL A INEXISTÊNCIA (Exclusivo Tema Vinteum) -->
             <div id="painel-inexistencia" class="hidden bg-cardBg p-5 rounded-lg border border-fuchsia-900/50 shadow-[0_0_15px_rgba(192,132,252,0.1)] transition-colors flex-col md:flex-row gap-6">
                 <div class="flex-1 flex flex-col justify-center">
                     <div class="flex justify-between items-center mb-2"><h2 class="text-xl font-bold text-fuchsia-400 font-[Oswald] uppercase tracking-wider"><i class="fas fa-circle-notch mr-2"></i>O Vazio</h2><div class="flex items-center gap-3"><button onclick="alterarVazio(-1)" class="bg-fuchsia-900 hover:bg-fuchsia-700 text-white w-8 h-8 rounded-full font-bold transition shadow-lg">-</button><span class="text-4xl font-bold text-white transition-colors" id="vazio-atual">0</span><button onclick="alterarVazio(1)" class="bg-fuchsia-900 hover:bg-fuchsia-700 text-white w-8 h-8 rounded-full font-bold transition shadow-lg">+</button></div></div>
@@ -339,7 +328,6 @@
                 </div>
             </div>
 
-            <!-- PAINEL PROTOCOLO DE CORROSÃO (Exclusivo Tema Vinteum) -->
             <div id="painel-corrosao" class="hidden grid-cols-1 md:grid-cols-3 gap-4 bg-black/80 border-2 border-red-800 p-5 rounded-lg shadow-[0_0_15px_rgba(255,0,60,0.5)] transition-all">
                 <div class="md:col-span-3 text-center mb-2"><h2 class="text-2xl font-bold text-red-500 uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;"><i class="fas fa-virus mr-2"></i>Protocolo de Corrosão</h2></div>
                 <div class="bg-red-950/40 p-3 rounded border border-red-900/50"><h3 class="text-sm text-red-400 font-bold mb-2 border-b border-red-900 pb-1"><i class="fas fa-arrow-up mr-1"></i> Poder do Vírus</h3><ul class="text-xs text-slate-300 space-y-2 mt-2"><li class="flex justify-between"><span>Ataque (BT/2)</span> <span id="corr-atk" class="text-red-400 font-bold text-sm">+0</span></li><li class="flex justify-between"><span>Dano (BT)</span> <span id="corr-dmg" class="text-red-400 font-bold text-sm">+0</span></li><li class="flex justify-between"><span>Deslocamento</span> <span class="text-red-400 font-bold text-sm">+6m</span></li></ul></div>
@@ -348,7 +336,14 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                <div class="lg:col-span-7 bg-cardBg p-4 rounded-lg border border-slate-700 transition-colors"><div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3"><h2 class="text-xl font-bold text-cyan-400"><i class="fas fa-list-check mr-2"></i>Perícias & Maestria</h2><span class="text-sm text-slate-400">Total = Atributo + Grau de Treino + Outros (BT: <span id="txt-bonus-nivel" class="font-bold text-white">0</span>)</span></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="lista-pericias"></div></div>
+                <div class="lg:col-span-7 bg-cardBg p-4 rounded-lg border border-slate-700 transition-colors">
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                        <h2 class="text-xl font-bold text-cyan-400"><i class="fas fa-list-check mr-2"></i>Perícias & Maestria</h2>
+                        <span class="text-sm text-slate-400">Total = Atributo + Grau de Treino + Outros (BT: <span id="txt-bonus-nivel" class="font-bold text-white">0</span>)</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4" id="lista-pericias"></div>
+                </div>
+                
                 <div class="lg:col-span-5 space-y-4">
                     <div class="bg-cardBg p-4 rounded-lg border border-orange-900/50 transition-colors"><div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2"><h2 class="text-lg font-bold text-orange-400"><i class="fas fa-biohazard mr-2"></i>Condições (Auto)</h2><button onclick="adicionarCondicao()" class="bg-orange-600 hover:bg-orange-700 px-3 py-1.5 rounded text-sm text-white"><i class="fas fa-plus"></i></button></div><p class="text-xs text-slate-400 mb-3 leading-relaxed">Muitas condições reduzem atributos ou deslocamento automaticamente.</p><div id="lista-condicoes" class="space-y-3 max-h-[200px] overflow-y-auto pr-2"></div></div>
                     <div class="bg-cardBg p-4 rounded-lg border border-teal-900/50 transition-colors"><div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2"><h2 class="text-lg font-bold text-teal-400"><i class="fas fa-shield-alt mr-2"></i>Defesas Especiais</h2><button onclick="adicionarDefesa()" class="bg-teal-600 hover:bg-teal-700 px-3 py-1.5 rounded text-sm text-white"><i class="fas fa-plus"></i></button></div><div id="lista-defesas" class="space-y-3 max-h-[160px] overflow-y-auto pr-2"></div></div>
@@ -370,20 +365,18 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div class="bg-cardBg p-5 rounded-lg border border-slate-700 transition-colors"><div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3"><h2 class="text-xl font-bold text-emerald-400"><i class="fas fa-shopping-bag mr-2"></i>Inventário</h2><button onclick="adicionarItem()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-sm"><i class="fas fa-plus mr-1"></i> Adicionar</button></div><div class="grid grid-cols-12 gap-2 text-xs font-semibold text-slate-400 uppercase px-2 mb-2"><div class="col-span-7">Item / Efeito</div><div class="col-span-2 text-center">Qtd</div><div class="col-span-2 text-center">Peso</div></div><div id="lista-inventario" class="space-y-3"></div><div class="mt-4 pt-3 border-t border-slate-700 flex justify-end text-sm"><span class="text-slate-400 font-semibold">Peso Total: <span id="peso-total" class="text-white ml-2 font-bold">0</span></span></div></div>
-                <div class="bg-cardBg p-5 rounded-lg border border-slate-700 flex flex-col transition-colors"><h2 class="text-xl font-bold text-slate-300 mb-4 border-b border-slate-700 pb-3"><i class="fas fa-book mr-2"></i>Anotações & História</h2><textarea id="anotacoes" class="input-field text-sm flex-1 resize-y min-h-[250px] p-4 font-roboto" placeholder="História, Aliados, Relacionamentos..."></textarea></div>
+                <div class="bg-cardBg p-5 rounded-lg border border-slate-700 flex flex-col transition-colors"><h2 class="text-xl font-bold text-slate-300 mb-4 border-b border-slate-700 pb-3"><i class="fas fa-book mr-2"></i>Anotações & História</h2><textarea id="anotacoes" class="input-field text-sm flex-1 resize-y min-h-[250px] p-4" placeholder="História, Aliados, Relacionamentos..."></textarea></div>
             </div>
         </div>
 
-        <!-- ==================== ABA GRIMÓRIO (NOVO VISUAL PREMIUM) ==================== -->
-        <div id="aba-grimorio" class="hidden space-y-5 font-roboto">
+        <div id="aba-grimorio" class="hidden space-y-5">
             <div class="bg-cardBg p-8 rounded-xl border border-slate-700 shadow-2xl flex flex-col gap-3 transition-colors relative overflow-hidden">
                 <div class="absolute -right-10 -top-10 opacity-10 pointer-events-none"><i class="fas fa-book-journal-whills text-[180px] text-cursed"></i></div>
                 <h2 class="text-4xl font-bold text-cursed font-cinzel relative z-10 tracking-wide">O Grande Grimório</h2>
                 <h3 class="text-xl text-slate-300 font-cinzel relative z-10 italic">Geometria Amaldiçoada</h3>
-                <p class="text-sm text-slate-400 relative z-10 max-w-3xl mt-2 leading-relaxed"></p>
+                <p class="text-sm text-slate-400 relative z-10 max-w-3xl mt-2 leading-relaxed">Expanda os tomos de conhecimento por níveis e marque as runas que sua mente já compreende. Utilize o Sintetizador Arcano para cruzar conceitos elementais na hora do combate.</p>
             </div>
 
-            <!-- SINTETIZADOR ARCANO -->
             <div id="synthesizer-box" class="crafter-box p-6 rounded-xl relative z-10">
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 border-b border-slate-700 pb-4 gap-4">
                     <div class="flex items-center gap-4">
@@ -421,13 +414,11 @@
                 <div class="bg-[#05080f] border border-slate-700/50 rounded-lg p-5 relative min-h-[140px] shadow-inner">
                     <span class="absolute top-0 right-0 bg-cursed text-white text-[10px] uppercase font-bold px-3 py-1 rounded-bl-lg shadow-md tracking-wider">Resultado da Síntese</span>
                     <h4 id="craft-nome" class="text-2xl font-bold text-cyan-300 mb-3 font-cinzel">Aguardando componentes...</h4>
-                    <p id="craft-desc" class="text-sm text-slate-300 leading-relaxed font-roboto">Selecione um Elemento e uma Forma. As runas disponíveis dependem do que você já estudou nos tomos abaixo.</p>
+                    <p id="craft-desc" class="text-sm text-slate-300 leading-relaxed">Selecione um Elemento e uma Forma. As runas disponíveis dependem do que você já estudou nos tomos abaixo.</p>
                 </div>
             </div>
 
-            <!-- REGISTRO DE APRENDIZADO (COMPACTO & ELEGANTE) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Coluna Luta -->
                 <div class="bg-cardBg p-6 rounded-xl border border-slate-700 shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-red-500 opacity-5 rounded-bl-full pointer-events-none"></div>
                     <h3 class="text-2xl font-bold text-red-400 mb-5 border-b border-red-900/30 pb-3 font-cinzel tracking-wider"><i class="fas fa-swords mr-3"></i>Tomos de Batalha (45)</h3>
@@ -438,7 +429,6 @@
                     </div>
                 </div>
 
-                <!-- Coluna Utilidade -->
                 <div class="bg-cardBg p-6 rounded-xl border border-slate-700 shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500 opacity-5 rounded-bl-full pointer-events-none"></div>
                     <h3 class="text-2xl font-bold text-emerald-400 mb-5 border-b border-emerald-900/30 pb-3 font-cinzel tracking-wider"><i class="fas fa-compass mr-3"></i>Tomos de Utilidade (75)</h3>
@@ -450,7 +440,6 @@
                 </div>
             </div>
 
-            <!-- MAGIAS INÚTEIS -->
             <div class="bg-cardBg p-6 rounded-xl border border-slate-700 mt-6 shadow-xl">
                 <div class="flex justify-between items-center mb-5 border-b border-slate-700 pb-3">
                     <h3 class="text-2xl font-bold text-slate-300 font-cinzel tracking-wider"><i class="fas fa-hat-wizard mr-3 text-purple-400"></i>Tranqueiras & Truques</h3>
@@ -461,7 +450,6 @@
             </div>
         </div>
 
-        <!-- ==================== ABA SHIKIGAMIS ==================== -->
         <div id="aba-shikigamis" class="hidden space-y-4">
             <div class="bg-cardBg p-6 rounded-lg border border-slate-700 shadow-lg flex justify-between items-center transition-colors">
                 <div><h2 class="text-3xl font-bold text-indigo-400 transition-colors"><i class="fas fa-ghost mr-2"></i>Invocação de Shikigamis</h2></div>
@@ -471,7 +459,6 @@
         </div>
     </div>
 
-    <!-- Modais -->
     <div id="msgModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden opacity-0 transition-opacity"><div class="bg-cardBg border border-slate-600 rounded-lg p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform" id="msgModalContent"><h3 class="text-xl font-bold mb-2 text-white" id="msgTitle">Aviso</h3><p class="text-slate-300 mb-6 text-sm" id="msgText">Mensagem aqui</p><button onclick="fecharModal()" class="bg-cursed hover:bg-cursedDark text-white px-6 py-2 rounded font-semibold w-full transition">OK</button></div></div>
     <div id="confirmModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden opacity-0 transition-opacity"><div class="bg-cardBg border border-slate-600 rounded-lg p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform" id="confirmModalContent"><div class="mb-4 text-red-500 text-4xl"><i class="fas fa-exclamation-triangle"></i></div><h3 class="text-xl font-bold mb-2 text-white font-cinzel">Atenção!</h3><p class="text-slate-300 mb-6 text-sm">Tem certeza que deseja apagar tudo? <b>O backup será perdido.</b> Salve o JSON primeiro.</p><div class="flex gap-4"><button onclick="fecharConfirmModal()" class="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded font-semibold w-full transition">Cancelar</button><button onclick="confirmarLimparFicha()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold w-full transition">Sim, Apagar Tudo</button></div></div></div>
     
@@ -488,7 +475,14 @@
                     </select>
                 </div>
                 <div><label class="block text-sm text-slate-300 font-bold mb-2">Cor de Destaque</label><div class="flex items-center gap-4"><input type="color" id="tema-cor" class="w-16 h-12 rounded cursor-pointer bg-transparent border-0" value="#7c3aed"><span class="text-xs text-slate-400">Clique para selecionar cor.</span></div></div>
-                <div><label class="block text-sm text-slate-300 font-bold mb-2">Fonte do Texto Geral</label><select id="tema-fonte" class="input-field text-sm p-3"><option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Padrão (Segoe UI)</option><option value="'Roboto', sans-serif">Roboto</option><option value="'Oswald', sans-serif">Oswald</option><option value="'Lora', serif">Lora</option><option value="'Courier Prime', monospace">Courier</option></select></div>
+                <div><label class="block text-sm text-slate-300 font-bold mb-2">Fonte do Texto Geral</label><select id="tema-fonte" class="input-field text-sm p-3">
+                    <option value="'Poppins', sans-serif">Redonda (Poppins)</option>
+                    <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Clássica (Segoe UI)</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Oswald', sans-serif">Oswald</option>
+                    <option value="'Lora', serif">Lora</option>
+                    <option value="'Courier Prime', monospace">Courier</option>
+                </select></div>
             </div>
             <div class="mt-8"><button onclick="salvarConfigTema()" class="bg-cursed hover:bg-cursedDark text-white px-6 py-3 rounded font-bold w-full transition text-lg shadow-lg">Aplicar Transformação</button></div>
         </div>
@@ -672,15 +666,60 @@
         function atualizarMagiaInutil(i, c, v) { magiasInuteis[i][c] = v; autoSalvar(); }
 
 
-        // --- CÓDIGO DO RPG BASE ---
+        // --- CÓDIGO DO RPG BASE (PERÍCIAS AMPLIADAS E COM ASTÚCIA/FEITIÇARIA) ---
         const classesRPG = { "lutador": { pvBase: 20, pvNivel: 4, peBase: 2, peNivel: 2 }, "especialista": { pvBase: 16, pvNivel: 3, peBase: 4, peNivel: 4 }, "feiticeiro": { pvBase: 12, pvNivel: 2, peBase: 6, peNivel: 6 }, "personalizado": { pvBase: 0, pvNivel: 0, peBase: 0, peNivel: 0 } };
         const listaTreinamentosPadrao = [ "Armas Brancas", "Armas de Fogo", "Combate Corpo-a-Corpo", "Longo Alcance", "Foco em Energia", "Reflexos em Combate", "Vontade de Ferro", "Mente Analítica", "Furtividade Avançada", "Sobrevivência Extrema", "Medicina de Combate", "Atletismo Superior", "Personalizado" ];
         const ditCondicoes = { "Abalado": "-2 em testes.", "Agarrado": "-2 em ataques/Reflexos. Deslocamento 0.", "Alucinado": "-2 em testes. 50% perder ação.", "Apavorado": "-5 em testes. Deve fugir.", "Asfixiado": "Após CON turnos, 0 PV.", "Atordoado": "Não age, Defesa -5. Falha Reflexos.", "Cego": "Desprevenido, deslocamento metade.", "Confuso": "Comportamento aleatório.", "Debilitado": "-5 FOR/DES/CON.", "Desprevenido": "-5 Defesa, sem reações.", "Doente": "-2 em atributos/perícias.", "Enjoado": "Só padrão ou movimento.", "Enredado": "-2 ataques/Reflexos, metade desloc.", "Envenenado": "Sofre veneno.", "Escondido": "+5 Furtividade, inimigos desprevenidos.", "Esmagado": "Indefeso, dano.", "Exausto": "-5 FOR/DES/CON, metade desloc.", "Fadigado": "Não corre/investe.", "Fascinado": "-5 Percepção.", "Fraco": "-2 FOR/DES/CON.", "Frustrado": "-2 INT/SAB/PRE.", "Hemorragia": "1d6 PV por turno.", "Inconsciente": "Indefeso, cai.", "Indefeso": "-10 Defesa, crítico auto.", "Lento": "Metade desloc.", "Morrendo": "Testes CON.", "Ofuscado": "-2 ataques/visão.", "Paralisado": "Indefeso.", "Pasmo": "Não age.", "Petrificado": "Inconsciente (pedra).", "Preso": "Indefeso/Agarrado.", "Prostrado": "-5 C-a-C.", "Queimando": "Fogo contínuo.", "Surdo": "-5 Iniciativa, falha 20% magia.", "Vulnerável": "-2 Defesa." };
-        const periciasBase = [ { id: 'acrobacia', nome: 'Acrobacia', attr: 'des' }, { id: 'adestramento', nome: 'Adestramento', attr: 'pre' }, { id: 'artes', nome: 'Artes', attr: 'pre' }, { id: 'atletismo', nome: 'Atletismo', attr: 'for' }, { id: 'atualidades', nome: 'Atualidades', attr: 'int' }, { id: 'ciencias', nome: 'Ciências', attr: 'int' }, { id: 'diplomacia', nome: 'Diplomacia', attr: 'pre' }, { id: 'enganacao', nome: 'Enganação', attr: 'pre' }, { id: 'fortitude', nome: 'Fortitude', attr: 'con' }, { id: 'furtividade', nome: 'Furtividade', attr: 'des' }, { id: 'iniciativa', nome: 'Iniciativa', attr: 'des' }, { id: 'intimidacao', nome: 'Intimidação', attr: 'pre' }, { id: 'intuicao', nome: 'Intuição', attr: 'sab' }, { id: 'investigacao', nome: 'Investigação', attr: 'int' }, { id: 'luta', nome: 'Luta', attr: 'for' }, { id: 'medicina', nome: 'Medicina', attr: 'sab' }, { id: 'ocultismo', nome: 'Ocultismo', attr: 'int' }, { id: 'percepcao', nome: 'Percepção', attr: 'sab' }, { id: 'pontaria', nome: 'Pontaria', attr: 'des' }, { id: 'profissao', nome: 'Profissão', attr: 'int' }, { id: 'reflexos', nome: 'Reflexos', attr: 'des' }, { id: 'religiao', nome: 'Religião', attr: 'sab' }, { id: 'sobrevivencia', nome: 'Sobrevivência', attr: 'sab' }, { id: 'tatica', nome: 'Tática', attr: 'int' }, { id: 'vontade', nome: 'Vontade', attr: 'sab' } ];
+        
+        // ADICIONADOS: ASTÚCIA E FEITIÇARIA (em ordem alfabética)
+        const periciasBase = [ 
+            { id: 'acrobacia', nome: 'Acrobacia', attr: 'des' }, { id: 'adestramento', nome: 'Adestramento', attr: 'pre' }, 
+            { id: 'artes', nome: 'Artes', attr: 'pre' }, { id: 'astucia', nome: 'Astúcia', attr: 'int' }, 
+            { id: 'atletismo', nome: 'Atletismo', attr: 'for' }, { id: 'atualidades', nome: 'Atualidades', attr: 'int' }, 
+            { id: 'ciencias', nome: 'Ciências', attr: 'int' }, { id: 'diplomacia', nome: 'Diplomacia', attr: 'pre' }, 
+            { id: 'enganacao', nome: 'Enganação', attr: 'pre' }, { id: 'feiticaria', nome: 'Feitiçaria', attr: 'int' },
+            { id: 'fortitude', nome: 'Fortitude', attr: 'con' }, { id: 'furtividade', nome: 'Furtividade', attr: 'des' }, 
+            { id: 'iniciativa', nome: 'Iniciativa', attr: 'des' }, { id: 'intimidacao', nome: 'Intimidação', attr: 'pre' }, 
+            { id: 'intuicao', nome: 'Intuição', attr: 'sab' }, { id: 'investigacao', nome: 'Investigação', attr: 'int' }, 
+            { id: 'luta', nome: 'Luta', attr: 'for' }, { id: 'medicina', nome: 'Medicina', attr: 'sab' }, 
+            { id: 'ocultismo', nome: 'Ocultismo', attr: 'int' }, { id: 'percepcao', nome: 'Percepção', attr: 'sab' }, 
+            { id: 'pontaria', nome: 'Pontaria', attr: 'des' }, { id: 'profissao', nome: 'Profissão', attr: 'int' }, 
+            { id: 'reflexos', nome: 'Reflexos', attr: 'des' }, { id: 'religiao', nome: 'Religião', attr: 'sab' }, 
+            { id: 'sobrevivencia', nome: 'Sobrevivência', attr: 'sab' }, { id: 'tatica', nome: 'Tática', attr: 'int' }, 
+            { id: 'vontade', nome: 'Vontade', attr: 'sab' } 
+        ];
 
-        let avatarImgData = ""; let inventario = [{ id: 1, nome: "Ferramenta Amaldiçoada", desc: "", qtd: 1, peso: 1 }]; let ataques = [{ id: 1, nome: "Ataque Desarmado", acao: "Padrão", teste: "Luta", dano: "1d3+FOR", critico: "x2", alcance: "C-a-C", especial: "" }]; let tecnicas = [{ id: 1, nome: "Técnica Básica", acao: "Padrão", custo: "1 PE", teste: "Vontade", dano: "1d6", efeito: "" }]; let treinamentos = []; let habilidades = { origem: [], espec: [], talento: [] }; let condicoes = []; let defesas = []; let votos = []; let shikigamis = []; let configTema = { preset: "padrao", cor: "#7c3aed", fonte: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", modoBatalha: false }; let corrosaoAtual = 0; let vazioAtual = 0; let fimAtual = 0; let petalInterval = null;
+        let avatarImgData = ""; let inventario = [{ id: 1, nome: "Ferramenta Amaldiçoada", desc: "", qtd: 1, peso: 1 }]; let ataques = [{ id: 1, nome: "Ataque Desarmado", acao: "Padrão", teste: "Luta", dano: "1d3+FOR", critico: "x2", alcance: "C-a-C", especial: "" }]; let tecnicas = [{ id: 1, nome: "Técnica Básica", acao: "Padrão", custo: "1 PE", teste: "Vontade", dano: "1d6", efeito: "" }]; let treinamentos = []; let habilidades = { origem: [], espec: [], talento: [] }; let condicoes = []; let defesas = []; let votos = []; let shikigamis = []; let configTema = { preset: "padrao", cor: "#7c3aed", fonte: "'Poppins', sans-serif", modoBatalha: false }; let corrosaoAtual = 0; let vazioAtual = 0; let fimAtual = 0; let petalInterval = null;
 
-        function inicializarPericias() { const container = document.getElementById('lista-pericias'); container.innerHTML = ''; periciasBase.forEach(p => { container.innerHTML += `<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-700 transition-colors"><div class="flex items-center gap-1 w-5/12"><span class="text-[11px] text-slate-300 truncate cursor-default transition-colors">${p.nome}</span><select id="attr-per-${p.id}" class="bg-slate-900/50 border border-slate-700 rounded text-[9px] text-slate-400 uppercase outline-none cursor-pointer p-0.5 ml-1 hover:border-cyan-400 hover:text-cyan-400 transition-colors" onchange="calcularDerivados()"><option value="for" ${p.attr === 'for' ? 'selected' : ''}>FOR</option><option value="des" ${p.attr === 'des' ? 'selected' : ''}>DES</option><option value="con" ${p.attr === 'con' ? 'selected' : ''}>CON</option><option value="int" ${p.attr === 'int' ? 'selected' : ''}>INT</option><option value="sab" ${p.attr === 'sab' ? 'selected' : ''}>SAB</option><option value="pre" ${p.attr === 'pre' ? 'selected' : ''}>PRE</option></select></div><div class="flex items-center gap-1 w-7/12 justify-end"><select id="grau-${p.id}" class="input-field bg-slate-900 border-none p-1 text-[10px] w-[75px] font-bold transition-colors" onchange="calcularDerivados()"><option value="0">Destre.</option><option value="1">Treinado</option><option value="2">Especia.</option><option value="3">Maestria</option></select><input type="number" id="per-${p.id}" class="input-field bg-slate-900 border-none w-8 p-1 text-center text-[10px] transition-colors" value="0" onchange="calcularDerivados()"><span class="text-cyan-400 font-bold w-7 text-right text-sm transition-colors" id="tot-${p.id}">+0</span></div></div>`; }); }
+        function inicializarPericias() { 
+            const container = document.getElementById('lista-pericias'); container.innerHTML = ''; 
+            periciasBase.forEach(p => { 
+                container.innerHTML += `
+                <div class="flex items-center justify-between bg-slate-800 p-3 rounded-lg border border-slate-700 transition-colors shadow-sm hover:border-slate-500">
+                    <div class="flex items-center gap-1 w-5/12">
+                        <span class="text-sm font-semibold text-slate-200 truncate cursor-default transition-colors" title="${p.nome}">${p.nome}</span>
+                        <select id="attr-per-${p.id}" class="bg-slate-900/80 border border-slate-600 rounded text-xs font-bold text-slate-400 uppercase outline-none cursor-pointer p-1 ml-1 hover:border-cyan-400 hover:text-cyan-400 transition-colors" onchange="calcularDerivados()">
+                            <option value="for" ${p.attr === 'for' ? 'selected' : ''}>FOR</option>
+                            <option value="des" ${p.attr === 'des' ? 'selected' : ''}>DES</option>
+                            <option value="con" ${p.attr === 'con' ? 'selected' : ''}>CON</option>
+                            <option value="int" ${p.attr === 'int' ? 'selected' : ''}>INT</option>
+                            <option value="sab" ${p.attr === 'sab' ? 'selected' : ''}>SAB</option>
+                            <option value="pre" ${p.attr === 'pre' ? 'selected' : ''}>PRE</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2 w-7/12 justify-end">
+                        <select id="grau-${p.id}" class="input-field bg-slate-900 border-slate-600 p-1.5 text-xs w-[85px] font-bold transition-colors" onchange="calcularDerivados()">
+                            <option value="0">Destre.</option>
+                            <option value="1">Treinado</option>
+                            <option value="2">Especia.</option>
+                            <option value="3">Maestria</option>
+                        </select>
+                        <input type="number" id="per-${p.id}" class="input-field bg-slate-900 border-slate-600 w-10 p-1.5 text-center text-xs font-bold transition-colors" value="0" onchange="calcularDerivados()">
+                        <span class="text-cyan-400 font-bold w-8 text-right text-base transition-colors" id="tot-${p.id}">+0</span>
+                    </div>
+                </div>`; 
+            }); 
+        }
         function mudarClasse() { const val = document.getElementById('classe-select').value; if(classesRPG[val] && val !== 'personalizado') { document.getElementById('pv-base').value = classesRPG[val].pvBase; document.getElementById('pv-nivel').value = classesRPG[val].pvNivel; document.getElementById('pe-base').value = classesRPG[val].peBase; document.getElementById('pe-nivel').value = classesRPG[val].peNivel; } calcularDerivados(); }
         function carregarAvatar(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const MAX_SIZE = 300; let width = img.width, height = img.height; if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); avatarImgData = canvas.toDataURL('image/jpeg', 0.85); document.getElementById('avatar-img').src = avatarImgData; document.getElementById('avatar-img').classList.remove('hidden'); document.getElementById('avatar-placeholder').classList.add('hidden'); document.getElementById('btn-remove-avatar').classList.remove('hidden'); autoSalvar(); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
         function removerAvatar(event) { event.stopPropagation(); avatarImgData = ""; document.getElementById('avatar-img').src = ''; document.getElementById('avatar-img').classList.add('hidden'); document.getElementById('avatar-placeholder').classList.remove('hidden'); document.getElementById('btn-remove-avatar').classList.add('hidden'); document.getElementById('avatar-upload').value = ''; autoSalvar(); }
@@ -839,14 +878,14 @@
         function renderizarShikigamis() { const lista = document.getElementById('lista-shikigamis'); lista.innerHTML = ''; shikigamis.forEach((shiki, index) => { lista.innerHTML += `<div class="bg-cardBg p-5 rounded-lg border border-indigo-900/50 shadow-md relative transition-colors"><button onclick="removerShikigami(${index})" class="absolute top-4 right-4 text-slate-500 hover:text-red-400 transition bg-slate-800 px-3 py-1.5 rounded"><i class="fas fa-trash"></i></button><input type="text" class="input-field text-2xl font-bold text-indigo-300 bg-transparent border-none p-0 mb-5 w-10/12 transition-colors" value="${shiki.nome}" placeholder="Nome do Shikigami" onchange="atualizarShiki(${index}, 'nome', this.value)"><div class="grid grid-cols-2 gap-4 mb-5"><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 transition-colors"><span class="text-xs text-slate-400 uppercase font-bold block mb-2 transition-colors">Pontos de Vida</span><div class="flex items-center gap-2"><input type="number" class="input-field text-red-400 font-bold p-2 text-center text-lg transition-colors" value="${shiki.pvAtual}" onchange="atualizarShiki(${index}, 'pvAtual', this.value)"><span class="text-slate-500 transition-colors">/</span><input type="number" class="input-field text-slate-400 p-2 text-center text-lg transition-colors" value="${shiki.pvMax}" onchange="atualizarShiki(${index}, 'pvMax', this.value)"></div></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 transition-colors"><span class="text-xs text-slate-400 uppercase font-bold block mb-2 transition-colors">Energia (PE)</span><div class="flex items-center gap-2"><input type="number" class="input-field text-purple-400 font-bold p-2 text-center text-lg transition-colors" value="${shiki.peAtual}" onchange="atualizarShiki(${index}, 'peAtual', this.value)"><span class="text-slate-500 transition-colors">/</span><input type="number" class="input-field text-slate-400 p-2 text-center text-lg transition-colors" value="${shiki.peMax}" onchange="atualizarShiki(${index}, 'peMax', this.value)"></div></div></div><div class="space-y-4"><div><span class="text-xs text-slate-400 uppercase font-bold transition-colors"><i class="fas fa-crosshairs mr-1"></i> Ataques & Danos</span><textarea class="input-field bg-slate-900 text-sm p-3 h-20 resize-y mt-2 transition-colors" placeholder="Ex: Mordida (Luta) - 1d8+3 Cortante" onchange="atualizarShiki(${index}, 'ataques', this.value)">${shiki.ataques}</textarea></div><div><span class="text-xs text-slate-400 uppercase font-bold transition-colors"><i class="fas fa-magic mr-1"></i> Habilidades Especiais</span><textarea class="input-field bg-slate-900 text-sm p-3 h-24 resize-y mt-2 transition-colors" placeholder="Voo, Resistências..." onchange="atualizarShiki(${index}, 'habilidades', this.value)">${shiki.habilidades}</textarea></div></div></div>`; }); }
         function adicionarShikigami() { shikigamis.push({ nome: "Novo Cão Divino", pvAtual: 10, pvMax: 10, peAtual: 0, peMax: 0, ataques: "", habilidades: "" }); renderizarShikigamis(); autoSalvar(); } function removerShikigami(i) { if(confirm("Tens a certeza que queres excluir este Shikigami?")) { shikigamis.splice(i, 1); renderizarShikigamis(); autoSalvar(); } } function atualizarShiki(i, c, v) { shikigamis[i][c] = v; autoSalvar(); }
 
-        function abrirConfigModal() { document.getElementById('tema-preset').value = configTema.preset || "padrao"; document.getElementById('tema-cor').value = configTema.cor || "#7c3aed"; document.getElementById('tema-fonte').value = configTema.fonte || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; const modal = document.getElementById('configModal'); modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('configModalContent').classList.remove('scale-95'); document.getElementById('configModalContent').classList.add('scale-100'); }, 10); }
+        function abrirConfigModal() { document.getElementById('tema-preset').value = configTema.preset || "padrao"; document.getElementById('tema-cor').value = configTema.cor || "#7c3aed"; document.getElementById('tema-fonte').value = configTema.fonte || "'Poppins', sans-serif"; const modal = document.getElementById('configModal'); modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('configModalContent').classList.remove('scale-95'); document.getElementById('configModalContent').classList.add('scale-100'); }, 10); }
         function fecharConfigModal() { const modal = document.getElementById('configModal'); modal.classList.add('opacity-0'); document.getElementById('configModalContent').classList.remove('scale-100'); document.getElementById('configModalContent').classList.add('scale-95'); setTimeout(() => { modal.classList.add('hidden'); }, 300); }
         function salvarConfigTema() { configTema.preset = document.getElementById('tema-preset').value; configTema.cor = document.getElementById('tema-cor').value; configTema.fonte = document.getElementById('tema-fonte').value; if(configTema.preset !== 'vinteum') configTema.modoBatalha = false; aplicarTema(configTema); fecharConfigModal(); autoSalvar(); }
 
         function aplicarTema(tema) {
             if (!tema) return;
             let darkColor = ajustarCorHex(tema.cor || "#7c3aed", -30);
-            document.documentElement.style.setProperty('--color-cursed', tema.cor || "#7c3aed"); document.documentElement.style.setProperty('--color-cursed-dark', darkColor); document.documentElement.style.setProperty('--font-main', tema.fonte || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif");
+            document.documentElement.style.setProperty('--color-cursed', tema.cor || "#7c3aed"); document.documentElement.style.setProperty('--color-cursed-dark', darkColor); document.documentElement.style.setProperty('--font-main', tema.fonte || "'Poppins', sans-serif");
             document.body.classList.remove('tema-vinteum', 'modo-batalha', 'tema-zoltraak');
             const btnBatalha = document.getElementById('btn-modo-batalha'); const painelCorrosao = document.getElementById('painel-corrosao'); const painelInexistencia = document.getElementById('painel-inexistencia');
             if (tema.preset && tema.preset !== 'padrao') { document.body.classList.add(`tema-${tema.preset}`); }
