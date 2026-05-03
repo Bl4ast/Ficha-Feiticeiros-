@@ -469,7 +469,7 @@
             </div>
 
             <!-- LINHA 3.5 - PAINEL A INEXISTÊNCIA (ANIQUILADOR DO DESTINO) -->
-            <div class="bg-cardBg p-5 rounded-lg border border-fuchsia-900/50 shadow-[0_0_15px_rgba(192,132,252,0.1)] transition-colors flex flex-col md:flex-row gap-6">
+            <div id="painel-inexistencia" class="hidden bg-cardBg p-5 rounded-lg border border-fuchsia-900/50 shadow-[0_0_15px_rgba(192,132,252,0.1)] transition-colors flex-col md:flex-row gap-6">
                 <!-- O Vazio -->
                 <div class="flex-1 flex flex-col justify-center">
                     <div class="flex justify-between items-center mb-2">
@@ -556,7 +556,7 @@
                 <div class="lg:col-span-7 bg-cardBg p-4 rounded-lg border border-slate-700 transition-colors">
                     <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3 transition-colors">
                         <h2 class="text-xl font-bold text-cyan-400 transition-colors"><i class="fas fa-list-check mr-2"></i>Perícias & Maestria</h2>
-                        <span class="text-sm text-slate-400 transition-colors">Total = Atributo + Nvl. Treino + Bônus de Maestria/BT (<span id="txt-bonus-nivel" class="font-bold text-white transition-colors">0</span>)</span>
+                        <span class="text-sm text-slate-400 transition-colors">Total = Atributo + Grau de Treino + Outros (BT: <span id="txt-bonus-nivel" class="font-bold text-white transition-colors">0</span>)</span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="lista-pericias">
                         <!-- Perícias via JS -->
@@ -856,12 +856,18 @@
             periciasBase.forEach(p => {
                 container.innerHTML += `
                     <div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-700 transition-colors">
-                        <span class="text-xs text-slate-300 w-1/2 cursor-default truncate transition-colors" title="Atributo: ${p.attr.toUpperCase()}">${p.nome} <span class="text-[10px] text-slate-500 transition-colors">(${p.attr.toUpperCase()})</span></span>
-                        <div class="flex items-center gap-2">
-                            <div class="flex flex-col items-center">
-                                <input type="number" id="per-${p.id}" class="input-field w-12 p-1 text-center text-sm" value="0" min="0" onchange="calcularDerivados()" title="Nível de Treinamento (Maestria)">
-                            </div>
-                            <span class="text-cyan-400 font-bold w-8 text-right text-base transition-colors" id="tot-${p.id}">+0</span>
+                        <span class="text-[11px] text-slate-300 w-4/12 truncate cursor-default transition-colors" title="Atributo: ${p.attr.toUpperCase()}">
+                            ${p.nome} <span class="text-[9px] text-slate-500 block">(${p.attr.toUpperCase()})</span>
+                        </span>
+                        <div class="flex items-center gap-1 w-8/12 justify-end">
+                            <select id="grau-${p.id}" class="input-field bg-slate-900 border-none p-1 text-[10px] w-[75px] font-bold transition-colors" onchange="calcularDerivados()" title="Grau de Treinamento">
+                                <option value="0">Destre.</option>
+                                <option value="1">Treinado</option>
+                                <option value="2">Especia.</option>
+                                <option value="3">Maestria</option>
+                            </select>
+                            <input type="number" id="per-${p.id}" class="input-field bg-slate-900 border-none w-8 p-1 text-center text-[10px] transition-colors" value="0" onchange="calcularDerivados()" title="Bônus Adicional (Ex: +2 de Item)">
+                            <span class="text-cyan-400 font-bold w-7 text-right text-sm transition-colors" id="tot-${p.id}">+0</span>
                         </div>
                     </div>`;
             });
@@ -938,42 +944,49 @@
             let percepcaoTotal = 0;
 
             // --- LÓGICA DO ACÚMULO DO VAZIO (BUFFS) ---
-            let bVazioDano = vazioAtual;
+            let bVazioDano = 0;
             let bVazioAcerto = 0, bVazioCD = 0, bVazioRD = 0, bVazioCA = 0, bVazioTR = 0;
-            let bVazioDado = Math.floor(vazioAtual / 5);
-            let bVazioNivelDano = Math.floor(vazioAtual / 6);
+            let bVazioDado = 0;
+            let bVazioNivelDano = 0;
             
-            if (vazioAtual > 0) {
-                const tabela = [
-                    { a: 0, r: 0, t: 0 },
-                    { a: 1, r: 1, t: 1 }, // L1
-                    { a: 2, r: 1, t: 1 }, // L2
-                    { a: 2, r: 2, t: 1 }, // L3
-                    { a: 3, r: 2, t: 2 }, // L4
-                    { a: 3, r: 2, t: 2 }, // L5
-                    { a: 4, r: 2, t: 2 }  // L6
-                ];
-                let ref = vazioAtual > 6 ? 6 : vazioAtual;
-                bVazioAcerto = tabela[ref].a;
-                bVazioCD = tabela[ref].a;
-                bVazioRD = tabela[ref].r;
-                bVazioCA = tabela[ref].r;
-                bVazioTR = tabela[ref].t;
+            // Só calcula e aplica os bônus da Inexistência (Vazio) se o tema Vinteum estiver ativo
+            if (configTema.preset === 'vinteum') {
+                bVazioDano = vazioAtual;
+                bVazioDado = Math.floor(vazioAtual / 5);
+                bVazioNivelDano = Math.floor(vazioAtual / 6);
+                
+                if (vazioAtual > 0) {
+                    const tabela = [
+                        { a: 0, r: 0, t: 0 },
+                        { a: 1, r: 1, t: 1 }, // L1
+                        { a: 2, r: 1, t: 1 }, // L2
+                        { a: 2, r: 2, t: 1 }, // L3
+                        { a: 3, r: 2, t: 2 }, // L4
+                        { a: 3, r: 2, t: 2 }, // L5
+                        { a: 4, r: 2, t: 2 }  // L6
+                    ];
+                    let ref = vazioAtual > 6 ? 6 : vazioAtual;
+                    bVazioAcerto = tabela[ref].a;
+                    bVazioCD = tabela[ref].a;
+                    bVazioRD = tabela[ref].r;
+                    bVazioCA = tabela[ref].r;
+                    bVazioTR = tabela[ref].t;
 
-                if (vazioAtual > 6) {
-                    let extra = vazioAtual - 6;
-                    bVazioAcerto += Math.floor(extra / 2);
-                    bVazioCD += Math.floor(extra / 2);
-                    bVazioRD += Math.floor(extra / 3);
-                    bVazioCA += Math.floor(extra / 3);
-                    bVazioTR += Math.floor(extra / 4);
+                    if (vazioAtual > 6) {
+                        let extra = vazioAtual - 6;
+                        bVazioAcerto += Math.floor(extra / 2);
+                        bVazioCD += Math.floor(extra / 2);
+                        bVazioRD += Math.floor(extra / 3);
+                        bVazioCA += Math.floor(extra / 3);
+                        bVazioTR += Math.floor(extra / 4);
+                    }
                 }
             }
 
             // Atualizar UI de Buffs do Vazio
             let buffsTexto = "Nenhum efeito ativo.";
             let buffsDano = "";
-            if (vazioAtual > 0) {
+            if (configTema.preset === 'vinteum' && vazioAtual > 0) {
                 buffsTexto = `+${bVazioAcerto} Acerto e CD | +${bVazioCA} CA | +${bVazioRD} RD Geral | +${bVazioTR} em TODOS os Testes de Resistência`;
                 buffsDano = `+${bVazioDano} Dano Fixo em Tudo`;
                 if (bVazioDado > 0) buffsDano += ` | +${bVazioDado}d de Dano na Arma`;
@@ -982,10 +995,13 @@
             document.getElementById('vazio-buffs-texto').innerText = buffsTexto;
             document.getElementById('vazio-buffs-dano').innerText = buffsDano;
 
-            // Perícias
+            // Perícias (Agora calculando via Graus de Treinamento)
             periciasBase.forEach(p => {
-                const treino = parseInt(document.getElementById(`per-${p.id}`)?.value) || 0;
-                const totalFinal = (baseAttrs[p.attr] - penAtributos[p.attr]) + treino + bonusMaestria - penGlobal;
+                const grau = parseInt(document.getElementById(`grau-${p.id}`)?.value) || 0;
+                const extra = parseInt(document.getElementById(`per-${p.id}`)?.value) || 0;
+                const valorTreino = grau * bonusMaestria; // Multiplica o BT pelo Grau (Treinado x1, Especialista x2, Maestria x3)
+                
+                const totalFinal = (baseAttrs[p.attr] - penAtributos[p.attr]) + valorTreino + extra - penGlobal;
                 if (p.id === 'percepcao') percepcaoTotal = totalFinal;
                 const elTotal = document.getElementById(`tot-${p.id}`);
                 if(elTotal) {
@@ -1378,11 +1394,14 @@
             document.body.classList.remove('tema-pergaminho', 'tema-sangue', 'tema-neon', 'tema-vinteum', 'modo-batalha');
             const btnBatalha = document.getElementById('btn-modo-batalha');
             const painelCorrosao = document.getElementById('painel-corrosao');
+            const painelInexistencia = document.getElementById('painel-inexistencia');
 
             if (tema.preset && tema.preset !== 'padrao') { document.body.classList.add(`tema-${tema.preset}`); }
 
             if (tema.preset === 'vinteum') {
                 btnBatalha.classList.remove('hidden');
+                painelInexistencia.classList.remove('hidden');
+                painelInexistencia.classList.add('flex');
                 document.getElementById('main-title').style.backgroundImage = 'none';
                 
                 if(tema.modoBatalha) {
@@ -1403,6 +1422,8 @@
                 btnBatalha.classList.add('hidden');
                 painelCorrosao.classList.add('hidden');
                 painelCorrosao.classList.remove('grid');
+                painelInexistencia.classList.add('hidden');
+                painelInexistencia.classList.remove('flex');
                 pararPetalas();
                 document.getElementById('main-title').style.backgroundImage = `linear-gradient(to right, #c084fc, var(--color-cursed))`;
             }
@@ -1458,7 +1479,11 @@
         // --- MANIPULAÇÃO CENTRALIZADA DE DADOS ---
         function obterDadosAtuais() {
             let treinoPericias = {};
-            periciasBase.forEach(p => { const input = document.getElementById(`per-${p.id}`); treinoPericias[p.id] = input ? parseInt(input.value) || 0 : 0; });
+            periciasBase.forEach(p => { 
+                const grau = parseInt(document.getElementById(`grau-${p.id}`)?.value) || 0;
+                const bonus = parseInt(document.getElementById(`per-${p.id}`)?.value) || 0;
+                treinoPericias[p.id] = { grau: grau, bonus: bonus }; 
+            });
 
             return {
                 jogador: document.getElementById('nome-jogador').value, nome: document.getElementById('nome').value,
@@ -1514,7 +1539,23 @@
             }
             
             if(dados.atributos) { ['for', 'des', 'con', 'int', 'sab', 'pre'].forEach(a => { document.getElementById(`attr-${a}`).value = dados.atributos[a] || 10; }); }
-            if(dados.pericias) { periciasBase.forEach(p => { const input = document.getElementById(`per-${p.id}`); if(input && dados.pericias[p.id] !== undefined) input.value = dados.pericias[p.id]; }); }
+            
+            if(dados.pericias) { 
+                periciasBase.forEach(p => { 
+                    const inputGrau = document.getElementById(`grau-${p.id}`);
+                    const inputBonus = document.getElementById(`per-${p.id}`);
+                    if(inputGrau && inputBonus && dados.pericias[p.id] !== undefined) { 
+                        // Compatibilidade com saves antigos (onde era apenas um número) e saves novos (objeto)
+                        if (typeof dados.pericias[p.id] === 'object') {
+                            inputGrau.value = dados.pericias[p.id].grau || 0;
+                            inputBonus.value = dados.pericias[p.id].bonus || 0;
+                        } else {
+                            inputBonus.value = dados.pericias[p.id];
+                            inputGrau.value = dados.pericias[p.id] > 0 ? 1 : 0; // Assume Treinado se tinha pontos no save antigo
+                        }
+                    } 
+                }); 
+            }
 
             condicoes = dados.condicoes || []; defesas = dados.defesas || []; votos = dados.votos || []; 
             shikigamis = dados.shikigamis || []; treinamentos = dados.treinamentos || [];
