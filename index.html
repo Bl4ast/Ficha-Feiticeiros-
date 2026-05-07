@@ -12,7 +12,7 @@
         :root {
             --color-cursed: #7c3aed;
             --color-cursed-dark: #5b21b6;
-            --font-main: 'Poppins', sans-serif;
+            --font-main: 'Poppins', sans-serif; /* Poppins como padrão agora! */
             --cyan-glow: rgba(0, 255, 255, 0.8);
         }
     </style>
@@ -203,10 +203,6 @@
         /* Auto-Save Indicator */
         @keyframes pulse-save { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
         .saving-indicator { animation: pulse-save 1.5s infinite; }
-        
-        /* Animação a Carregar IA */
-        @keyframes pulse-text { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .loading-ai { animation: pulse-text 1.5s infinite ease-in-out; }
     </style>
 </head>
 <body class="p-2 md:p-4">
@@ -396,11 +392,11 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 border-b border-slate-700 pb-4 gap-4 relative z-10">
                     <div class="flex items-center gap-4">
                         <i class="fas fa-atom text-3xl text-cyan-400 animate-spin-slow drop-shadow-[0_0_8px_cyan]"></i>
-                        <h3 class="text-2xl font-bold text-white font-cinzel tracking-wider">Sintetizador Arcano <span class="text-xs text-purple-400 align-middle ml-2 border border-purple-500 rounded-full px-2 py-0.5"><i class="fas fa-sparkles"></i> IA Activa</span></h3>
+                        <h3 class="text-2xl font-bold text-white font-cinzel tracking-wider">Sintetizador Arcano</h3>
                     </div>
                     <div class="flex gap-2">
-                        <button id="btn-forjar-ia" onclick="forjarItemMagico()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-lg shadow-[0_0_10px_rgba(217,119,6,0.4)] transition-all font-bold tracking-wide uppercase text-sm border border-amber-400/50"><i class="fas fa-hammer mr-2"></i>Forjar Item</button>
-                        <button id="btn-conjurar-ia" onclick="animarSintese()" class="bg-cursed hover:bg-cursedDark text-white px-6 py-2.5 rounded-lg shadow-[0_0_15px_rgba(124,58,237,0.4)] hover:shadow-[0_0_20px_rgba(124,58,237,0.8)] transition-all font-bold tracking-wide uppercase text-sm"><i class="fas fa-wand-magic-sparkles mr-2"></i>Conjurar</button>
+                        <button onclick="forjarItemMagico()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-lg shadow-[0_0_10px_rgba(217,119,6,0.4)] transition-all font-bold tracking-wide uppercase text-sm border border-amber-400/50"><i class="fas fa-hammer mr-2"></i>Forjar Item</button>
+                        <button onclick="animarSintese()" class="bg-cursed hover:bg-cursedDark text-white px-6 py-2.5 rounded-lg shadow-[0_0_15px_rgba(124,58,237,0.4)] hover:shadow-[0_0_20px_rgba(124,58,237,0.8)] transition-all font-bold tracking-wide uppercase text-sm"><i class="fas fa-wand-magic-sparkles mr-2"></i>Conjurar</button>
                     </div>
                 </div>
                 
@@ -535,47 +531,6 @@
     </div>
 
     <script>
-       // --- FUNÇÃO PARA CHAMAR A API GEMINI ---
-        async function chamarGeminiIA(promptUsuario) {
-            // Coloque a sua chave dentro das aspas abaixo:
-            const apiKey = "AIzaSyAZURVUZy0EdcrpWwoKLUYTxSGn233j5T8";
-            
-            if (!apiKey || apiKey === "AIzaSyAZURVUZy0EdcrpWwoKLUYTxSGn233j5T8" || apiKey === "") return false;
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-            const systemPrompt = "És um mestre de RPG criativo e narrador. As tuas descrições devem ser épicas, focadas na fantasia e magia. REGRA ABSOLUTA: O conteúdo deve ser estritamente seguro e apropriado para todas as idades (abaixo de 18 anos), sem violência explícita, sem menções a sangue, morte gráfica, drogas ou temas inadequados. Usa um tom misterioso, poético e cativante em português de Portugal. Responde APENAS com a narrativa gerada (máximo 3 frases).";
-            
-            const payload = {
-                contents: [{ parts: [{ text: promptUsuario }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
-            };
-
-            let retries = 3;
-            let delay = 1000;
-            
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (!response.ok) {
-                        console.error("Erro HTTP da API:", response.status);
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const result = await response.json();
-                    return result.candidates?.[0]?.content?.parts?.[0]?.text || false;
-                } catch (error) {
-                    console.error("Tentativa falhou:", error);
-                    if (i === retries - 1) return false;
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
-                }
-            }
-            return false;
-        }
-
         // --- NOVO BANCO DE DADOS: O GRIMÓRIO DE 100 SÍMBOLOS ---
         const bdGrimorio = {
             essencias: [
@@ -864,60 +819,15 @@
             return null;
         }
 
-        // Função de conjuração que chama a Inteligência Artificial
-        async function animarSintese() { 
+        function animarSintese() { 
             const box = document.getElementById('synthesizer-box'); 
-            const btn = document.getElementById('btn-conjurar-ia');
-            const elDesc = document.getElementById('craft-desc');
-            const idEss = document.getElementById('craft-essencia').value; 
-            const idForma = document.getElementById('craft-forma').value;
-
-            if (!idEss || !idForma) return;
-
             box.classList.remove('flash-magic'); 
             void box.offsetWidth; 
             box.classList.add('flash-magic'); 
-            
-            // Renderiza o visual básico primeiro
-            gerarDescricaoMagia(); 
-            
-            const ess = getItemPorIdGlobal(idEss); 
-            const forma = getItemPorIdGlobal(idForma);
-            const mod1 = getItemPorIdGlobal(document.getElementById('craft-mod1').value); 
-            const mod2 = getItemPorIdGlobal(document.getElementById('craft-mod2').value);
-            const gatilho = getItemPorIdGlobal(document.getElementById('craft-gatilho').value);
-            
-            let modStr = "Nenhum";
-            if (mod1) modStr = mod1.nome + " (" + mod1.desc + ")";
-            if (mod2 && (!mod1 || mod1.id !== mod2.id)) modStr += " e " + mod2.nome + " (" + mod2.desc + ")";
-            let gatStr = gatilho ? gatilho.nome + " (" + gatilho.desc + ")" : "Sem gatilho especial (conjuração imediata)";
-
-            // Substituir a caixa de roleplay pela animação de carregamento
-            const rpBox = elDesc.querySelector('.border-l-2');
-            if (rpBox) {
-                rpBox.innerHTML = `<i class="fas fa-sparkles text-purple-400 mr-2 loading-ai"></i><span class="loading-ai">A inteligência ancestral está a tecer as palavras desta magia através do éter...</span>`;
-            }
-            
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Conjurando...`;
-            btn.disabled = true;
-
-            const prompt = `Descreve de forma épica em 2 ou 3 frases (usando a segunda pessoa do singular: "Tu canalizas...", "Manifestas...") a conjuração de uma magia composta por: Essência: ${ess.nome} (${ess.desc}), Forma: ${forma.nome} (${forma.desc}), Modificadores: ${modStr}, Gatilho: ${gatStr}. A magia deve ser maravilhosa, misteriosa e sem violência explícita.`;
-            
-            const respostaIA = await chamarGeminiIA(prompt);
-            
-            if (respostaIA && rpBox) {
-                rpBox.innerHTML = `"${respostaIA}"`;
-            } else if (rpBox) {
-                // Fallback caso a IA falhe (sem internet, limite de cota, etc)
-                rpBox.innerHTML = `"A malha mágica falhou ao tentar conectar-se com o além. Tu canalizas a essência, mas apenas o efeito básico da magia se manifesta no plano material."`;
-            }
-
-            btn.innerHTML = `<i class="fas fa-wand-magic-sparkles mr-2"></i>Conjurar`;
-            btn.disabled = false;
+            gerarDescricaoMagia(true); 
         }
 
-        // Gera a estrutura do HTML (sem o texto narrativo, que agora vem da IA no botão)
-        function gerarDescricaoMagia() {
+        function gerarDescricaoMagia(forcarNarrativa = false) {
             const idEss = document.getElementById('craft-essencia').value; 
             const idForma = document.getElementById('craft-forma').value;
             const idMod1 = document.getElementById('craft-mod1').value; 
@@ -970,19 +880,29 @@
             
             if (modsApt.length > 0) txt += `<br><div class="mt-2 pt-2 border-t border-slate-700/50">${modsApt.join('<br>')}</div>`;
 
-            // TEXTO DE ROLEPLAY (Aguardando IA)
+            // TEXTO DE ROLEPLAY (A Magia Acontecendo)
             let rpText = `<div class="mt-4 p-4 border-l-2 bg-[#00000080] text-slate-300 italic rounded-r-lg text-sm shadow-inner" style="border-color: ${ess.cor || '#7c3aed'};">`;
-            rpText += `<i class="fas fa-magic text-slate-500 mr-2"></i>Clica em <b>Conjurar</b> para a Inteligência Artificial gerar a narrativa visual única desta magia.`;
-            rpText += `</div>`;
+            
+            if (gatilho) {
+                rpText += `"A magia é inscrita na matéria e adormece. Ela despertará subitamente e assumirá a forma de um(a) <b class="text-cyan-300">${forma.nome.split('/')[0]}</b> impregnada de <b style="color:${ess.cor || '#a78bfa'};">${ess.nome.split('/')[0]}</b> única e exclusivamente quando ${gatilho.desc.toLowerCase().replace('.', '')}`;
+            } else {
+                rpText += `"Você canaliza a essência de <b style="color:${ess.cor || '#a78bfa'};">${ess.nome.split('/')[0]}</b>, dobrando o espaço para que ela assuma a geometria exata de um(a) <b class="text-cyan-300">${forma.nome.split('/')[0]}</b>. No ar, a magia se manifesta de modo que ${forma.desc.toLowerCase().replace('.', '')}, carregando a propriedade de que ${ess.desc.toLowerCase().replace('.', '')}`;
+            }
+            
+            if(mod1 || mod2) {
+                rpText += ` A estrutura foi alterada por <span class="text-fuchsia-300">${mod1?.nome.split('/')[0] || ''}</span>${mod2 && idMod2 !== idMod1 ? ` e <span class="text-fuchsia-300">${mod2.nome.split('/')[0]}</span>` : ''}.`;
+            }
+            rpText += `."</div>`;
 
             elNome.innerText = titulo; 
             elDesc.innerHTML = txt + rpText;
         }
 
-        // --- FORJA DE ITENS MÁGICOS COM IA ---
+        // --- FORJA DE ITENS MÁGICOS ---
         function gerarCaminhoSVGUnico(seedStr) {
+            // Gera formas geométricas únicas usando pseudo-randomização da string base (Essencia+Forma+etc)
             let num = 0; for(let i=0; i<seedStr.length; i++) num += seedStr.charCodeAt(i);
-            const pontos = 3 + (num % 5); 
+            const pontos = 3 + (num % 5); // Polígonos de 3 a 7 lados
             const r = 40; const cx = 50, cy = 50;
             let path = '';
             for(let i=0; i<pontos; i++) {
@@ -991,6 +911,7 @@
                 path += (i===0 ? `M${x},${y} ` : `L${x},${y} `);
             }
             path += 'Z';
+            // Um circulo extra ou formas internas dependendo do número
             let svgInner = `<path d="${path}" stroke="currentColor" stroke-width="1.5" fill="none" transform="rotate(${num%360} 50 50)"/>`;
             if (num % 2 === 0) svgInner += `<circle cx="50" cy="50" r="25" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="2 4"/>`;
             else svgInner += `<path d="${path}" stroke="currentColor" stroke-width="0.5" fill="none" transform="rotate(${(num+180)%360} 50 50) scale(0.6) translate(30, 30)"/>`;
@@ -1002,7 +923,7 @@
             </svg>`;
         }
 
-        async function forjarItemMagico() {
+        function forjarItemMagico() {
             const idEss = document.getElementById('craft-essencia').value; 
             const idForma = document.getElementById('craft-forma').value;
             if(!idEss || !idForma) { mostrarModal("Falha na Forja", "É necessário no mínimo uma Essência e uma Forma para forjar um item."); return; }
@@ -1016,29 +937,10 @@
             let nomePadrao = customName || `Relíquia de ${ess.nome.split('/')[0]}`;
             if(!customName && gatilho) nomePadrao = `${gatilho.nome.split('/')[0]} de ${ess.nome.split('/')[0]}`;
 
-            const btnForjar = document.getElementById('btn-forjar-ia');
-            const textoOriginalBtn = btnForjar.innerHTML;
-            btnForjar.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>A Forjar IA...`;
-            btnForjar.disabled = true;
-
-            let modStr = "Nenhum";
-            if (mod1) modStr = mod1.nome;
-            if (mod2 && (!mod1 || mod1.id !== mod2.id)) modStr += " e " + mod2.nome;
-            let gatStr = gatilho ? gatilho.nome : "Ativação Manual";
-
-            const prompt = `Descreve em 2 ou 3 frases a aparência épica e o funcionamento mágico de um artefacto chamado "${nomePadrao}". Composição técnica: Essência: ${ess.nome}, Forma: ${forma.nome}, Modificadores: ${modStr}, Gatilho: ${gatStr}. O texto deve ser seguro e misterioso, focado nos detalhes visuais da relíquia.`;
-            
-            let descricaoIA = await chamarGeminiIA(prompt);
-            
-            // Se a API falhar, usamos um texto base robusto
-            if (!descricaoIA) {
-                descricaoIA = `[Ao ${gatilho ? gatilho.desc.toLowerCase().replace('.', '') : 'ativar'}] manifesta uma ${forma.desc.toLowerCase().replace('.', '')} carregando o efeito absoluto de ${ess.desc.toLowerCase().replace('.', '')}`;
-            }
-
             const itemForjado = {
                 id: Date.now(),
                 nome: nomePadrao,
-                desc: descricaoIA,
+                desc: `[Ao ${gatilho ? gatilho.desc.toLowerCase().replace('.', '') : 'ativar'}] manifesta uma ${forma.desc.toLowerCase().replace('.', '')} carregando o efeito absoluto de ${ess.desc.toLowerCase().replace('.', '')}`,
                 essencia: ess, forma: forma, mod1: mod1, mod2: mod2, gatilho: gatilho,
                 seed: idEss+idForma+(mod1?mod1.id:'')+(gatilho?gatilho.id:''),
                 imagem: ""
@@ -1049,11 +951,8 @@
             itensMagicos.push(itemForjado);
             renderizarItensMagicos();
             autoSalvar();
-            mostrarModal("Relíquia Forjada!", "O teu novo item foi criado com uma história única gerada por IA e guardado na aba 'Itens Mágicos'.");
+            mostrarModal("Sucesso na Forja!", "Sua relíquia foi criada e armazenada na aba 'Itens Mágicos'. Dica: Clique na imagem do item para personalizá-lo com uma foto.");
             mudarAba('itens');
-
-            btnForjar.innerHTML = textoOriginalBtn;
-            btnForjar.disabled = false;
         }
 
         function renderizarItensMagicos() {
@@ -1104,6 +1003,7 @@
                         <textarea class="w-full bg-transparent text-slate-300 text-sm border-none outline-none focus:ring-0 p-0 resize-y min-h-[80px] font-roboto transition-colors focus:text-white placeholder-slate-600" placeholder="História, detalhes ou lore do item..." onchange="atualizarItemMagico(${index}, 'desc', this.value)">${item.desc}</textarea>
                     </div>
 
+                    <!-- Botão Movidó para o final para ficar SEMPRE por cima de tudo -->
                     <button type="button" onclick="removerItemMagico(${index})" title="Quebrar Item" class="absolute top-4 right-4 text-slate-400 hover:text-white opacity-80 md:opacity-0 group-hover:opacity-100 transition-all z-[100] bg-black/90 hover:bg-red-600 border border-slate-600 hover:border-red-400 rounded-full w-9 h-9 flex items-center justify-center cursor-pointer shadow-lg">
                         <i class="fas fa-trash text-sm"></i>
                     </button>
